@@ -17,7 +17,7 @@ public class BfsTask
         var queue = new Queue<Point>();
         queue.Enqueue(start);
 
-        var d = Walker.PossibleDirections;
+        var d = Direction.PossibleDirections;
         while (queue.Count != 0)
         {
             var point = queue.Dequeue();

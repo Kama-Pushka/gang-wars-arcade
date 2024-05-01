@@ -2,11 +2,11 @@
 
 public class OwnedLocation
 {
-    public readonly int Owner;
+    public Gang Owner { get; set; }
     public readonly Point Location;
     public readonly int Distance;
 
-    public OwnedLocation(int owner, Point location, int distance)
+    public OwnedLocation(Gang owner, Point location, int distance)
     {
         Owner = owner;
         Location = location;
@@ -25,7 +25,7 @@ public class OwnedLocation
     {
         unchecked
         {
-            var hashCode = Owner;
+            var hashCode = (int)Owner;
             hashCode = (hashCode * 397) ^ Location.GetHashCode();
             hashCode = (hashCode * 397) ^ Distance;
             return hashCode;

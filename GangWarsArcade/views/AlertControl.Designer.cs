@@ -1,6 +1,6 @@
 ﻿namespace GangWarsArcade.views
 {
-    partial class LoadLevelControl
+    partial class AlertControl
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -30,12 +30,12 @@
         {
             SuspendLayout();
             // 
-            // LoadLevelControl
+            // AlertControl
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            Name = "LoadLevelControl";
-            Size = new Size(800, 60);
+            Name = "AlertControl";
+            Size = new Size(250, 513);
             ResumeLayout(false);
         }
 

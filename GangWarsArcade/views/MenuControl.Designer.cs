@@ -1,6 +1,6 @@
 ﻿namespace GangWarsArcade.views
 {
-    partial class RivalsTaskControl
+    partial class MenuControl
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -30,12 +30,12 @@
         {
             SuspendLayout();
             // 
-            // RivalsTaskControl
+            // MenuControl
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            Name = "RivalsTaskControl";
-            Size = new Size(1000, 1000);
+            Name = "MenuControl";
+            Size = new Size(1399, 436);
             ResumeLayout(false);
         }
 

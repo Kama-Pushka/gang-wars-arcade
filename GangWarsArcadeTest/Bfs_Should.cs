@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using GangWarsArcade.domain;
-using GangWarsArcade.Dungeons;
 
 namespace Dungeon;
 
@@ -145,7 +144,7 @@ public class Bfs_Should
 
     private static List<Point>[] GetPaths(Map map)
     {
-        var paths = BfsTask.FindPaths(map, map.InitialPosition, map.Chests)
+        var paths = BfsTask.FindPaths(map, map.InitialPosition, map.Items)
             .Select(x => x.ToList())
             .ToArray();
         return paths;
@@ -188,9 +187,9 @@ public class Bfs_Should
 
     private void AssertPath(Map map, List<Point> path, int expectedLength)
     {
-        var directions = Walker.PossibleDirections.ToList();
+        var directions = Player.PossibleDirections.ToList();
         Assert.IsNotEmpty(path, "path should not be empty");
-        Assert.Contains(path[0], map.Chests, $"The first point in the path should be one of the chest, but was {path[0]}");
+        Assert.Contains(path[0], map.Items, $"The first point in the path should be one of the chest, but was {path[0]}");
         for (var i = 0; i < path.Count - 1; i++)
         {
             var offset = path[i + 1] - path[i];

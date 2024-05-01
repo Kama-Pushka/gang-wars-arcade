@@ -1,6 +1,6 @@
 ﻿namespace GangWarsArcade.views
 {
-    partial class DungeonTaskControl
+    partial class GameplayControl
     {
         /// <summary> 
         /// Обязательная переменная конструктора.

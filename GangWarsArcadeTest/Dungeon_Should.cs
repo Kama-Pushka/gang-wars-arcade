@@ -19,7 +19,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new[] { MoveDirection.Right }, path);
+        Assert.AreEqual(new[] { Direction.Right }, path);
     }
 
     [Test]
@@ -34,7 +34,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new[] { MoveDirection.Right }, path);
+        Assert.AreEqual(new[] { Direction.Right }, path);
     }
 
     [Test]
@@ -50,7 +50,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new MoveDirection[0], path);
+        Assert.AreEqual(new Direction[0], path);
     }
 
     [Test]
@@ -66,7 +66,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new MoveDirection[0], path);
+        Assert.AreEqual(new Direction[0], path);
     }
 
     [Test]
@@ -81,7 +81,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new MoveDirection[0], path);
+        Assert.AreEqual(new Direction[0], path);
     }
 
     [Test]
@@ -96,7 +96,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new[] { MoveDirection.Down, MoveDirection.Right }, path);
+        Assert.AreEqual(new[] { Direction.Down, Direction.Right }, path);
     }
 
     [Test]
@@ -112,7 +112,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new[] { MoveDirection.Right, MoveDirection.Down, MoveDirection.Down, MoveDirection.Left }, path);
+        Assert.AreEqual(new[] { Direction.Right, Direction.Down, Direction.Down, Direction.Left }, path);
     }
 
     [Test]
@@ -128,7 +128,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new[] { MoveDirection.Down, MoveDirection.Right }, path);
+        Assert.AreEqual(new[] { Direction.Down, Direction.Right }, path);
     }
 
     [Test]
@@ -144,7 +144,7 @@ public class Dungeon_Should
 
         var path = DungeonTask.FindShortestPath(map);
 
-        Assert.AreEqual(new[] { MoveDirection.Up, MoveDirection.Left }, path);
+        Assert.AreEqual(new[] { Direction.Up, Direction.Left }, path);
     }
 
     [Test]
@@ -158,10 +158,10 @@ public class Dungeon_Should
         IsValidPath(map, path, expectedLength);
     }
 
-    private void IsValidPath(Map map, MoveDirection[] path, int expectedPathLength)
+    private void IsValidPath(Map map, Direction[] path, int expectedPathLength)
     {
         var chestTaken = false;
-        var chestSet = new HashSet<Point>(map.Chests);
+        var chestSet = new HashSet<Point>(map.Items);
         var walker = new Walker(map.InitialPosition);
         foreach (var step in path)
         {

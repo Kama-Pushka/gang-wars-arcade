@@ -4,13 +4,13 @@ public class RivalsTask
 {
     public static IEnumerable<OwnedLocation> AssignOwners(Map map)
     {
-        var visited = new Dictionary<Point, (int Owner, int Distance)>();
+        var visited = new Dictionary<Point, (Gang Owner, int Distance)>();
         var queue = new Queue<Point>();
-        for (var i = 0; i < map.Players.Length; i++)
+        for (var i = 0; i < map.Players.Count; i++)
         {
-            visited[map.Players[i]] = (i, 0);
-            queue.Enqueue(map.Players[i]);
-            yield return new OwnedLocation(i, map.Players[i], 0);
+            visited[map.Players[(Gang)i].Position] = ((Gang)i, 0);
+            queue.Enqueue(map.Players[(Gang)i].Position);
+            yield return new OwnedLocation((Gang)i, map.Players[(Gang)i].Position, 0);
         }
 
         var d = new Point[]

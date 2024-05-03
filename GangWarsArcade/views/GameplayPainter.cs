@@ -1,7 +1,5 @@
 ﻿using GangWarsArcade.domain;
 using GangWarsArcade.Properties;
-using System.Drawing;
-using System.Numerics;
 using Point = GangWarsArcade.domain.Point;
 
 namespace GangWarsArcade.views;
@@ -10,19 +8,13 @@ public class GameplayPainter
 {
     public event Action InvalidateVisual;
 
-    //private Dictionary<Map, Point[]> paths;
-    private Map currentMap;
-    private int mainIteration;
+    public readonly Map CurrentMap;
 
-    private Point lastMouseClick;
-    private IEnumerable<List<Point>> pathsToChests;
     private Bitmap grass;
     private Bitmap path;
-    private Bitmap peasant;
     private Bitmap castle;
-    private Bitmap chest;
 
-    public Size CellSize => grass.Size;
+    private Size CellSize => grass.Size;
 
     public static readonly SolidBrush[] colourValues = new[]
     {
@@ -30,8 +22,10 @@ public class GameplayPainter
         "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080"
     }.Select(c => new SolidBrush(ColorTranslator.FromHtml(c))).ToArray();
 
-    public GameplayPainter()
+    public GameplayPainter(Map map)
     {
+        CurrentMap = map;
+        
         // Load resources
         grass = Resource.Grass;
         path = Resource.Path;
@@ -40,81 +34,39 @@ public class GameplayPainter
         chest = Resource.Chest;
     }
 
-    public void Load(Map map)
-    {
-        currentMap = map;
-        mainIteration = 0;
-    }
-
     public void ResetMap()
     {
-        currentMap.ResetMap();
-        mainIteration = 0;
-        lastMouseClick = null;
-        pathsToChests = null;
+        CurrentMap.ResetMap();
         InvalidateVisual();
     }
 
     public void Update()
     {
-        ++mainIteration;
-        currentMap.Update();
+        CurrentMap.Update();
         InvalidateVisual();
     }
 
-    public void OnPointerPressed(object sender, MouseEventArgs e)
-    {
-        var location = e.Location;
-        var position = new Point((location.X / CellSize.Width), (location.Y / CellSize.Height));
-
-        lastMouseClick = position;
-        pathsToChests = null;
-        if (!currentMap.InBounds(position) ||
-            currentMap.Maze[lastMouseClick.X, lastMouseClick.Y] != MapCell.Empty) return;
-
-        pathsToChests = BfsTask.FindPaths(currentMap, lastMouseClick, currentMap.Items.Keys.ToArray())
-            .Select(x => x.ToList()).ToList();
-
-        foreach (var pathsToChest in pathsToChests)
-            pathsToChest.Reverse();
-    }
-
-    public void OnPointerReleased(object sender, MouseEventArgs e)
-    {
-        pathsToChests = null;
-    }
-
-    // Paint Scene //
-
+    #region Paint Scene
     public void Render(object sender, PaintEventArgs e)
     {
         var g = e.Graphics;
 
         DrawLevel(g);
         DrawOwnedLocations(g);
-        DrawEntity(g, mainIteration);
-        
-        if (pathsToChests != null && lastMouseClick.HasValue)
-            DrawAdditionalPaths(g, lastMouseClick);
+        DrawEntity(g);
     }
 
     private void DrawLevel(Graphics g)
     {
         RenderMap(g);
-        foreach (var itemPoint in currentMap.Items.Keys)
-            g.DrawImage(chest,
-                new Rectangle(itemPoint.X * CellSize.Width, itemPoint.Y * CellSize.Height, CellSize.Width, CellSize.Height));
-        foreach (var building in currentMap.Buildings)
+        foreach (var building in CurrentMap.Buildings)
             g.DrawImage(castle,
-                new Rectangle(building.X * CellSize.Width, building.Y * CellSize.Height, CellSize.Width, CellSize.Height));
-        foreach (var trap in currentMap.Traps.Keys)
-            g.DrawImage(chest,
-                new Rectangle(trap.X * CellSize.Width, trap.Y * CellSize.Height, CellSize.Width, CellSize.Height));
+                new Rectangle(building.Location.X * CellSize.Width, building.Location.Y * CellSize.Height, CellSize.Width, CellSize.Height));
     }
 
     private void DrawOwnedLocations(Graphics g)
     {
-        foreach (var cell in currentMap.OwnedLocations.Values)
+        foreach (var cell in CurrentMap.OwnedLocations.Values)
         {
             var cellLocation = new System.Drawing.Point(cell.Location.X * CellSize.Width, cell.Location.Y * CellSize.Height);
             var rect = new Rectangle(cellLocation, grass.Size);
@@ -125,30 +77,25 @@ public class GameplayPainter
         }
     }
 
-    private void DrawEntity(Graphics g, int interation)
+    private void DrawEntity(Graphics g)
     {
-        foreach (var player in currentMap.Players.Values.Where(p => p.IsAlive))
-        {
-            g.DrawImage(player.Image,
-                new Rectangle(player.Position.X * CellSize.Width, player.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height));
+        foreach (var entity in CurrentMap.Entities.Where(e => e.Type.Name != "Player"))
+            g.DrawImage(entity.Image,
+                new Rectangle(entity.Position.X * CellSize.Width, entity.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height));
 
+        foreach (var entity in CurrentMap.Entities.Where(e => e.Type.Name == "Player"))
+        {
+            g.DrawImage(entity.Image,
+                new Rectangle(entity.Position.X * CellSize.Width, entity.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height));
+            
+            var player = (Player)entity;
             if (player.DamageColor != null)
             {
-                g.FillRectangle(player.DamageColor, player.Position.X * CellSize.Width, player.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height); // TODO прозрачность?
+                g.FillRectangle(player.DamageColor, 
+                    player.Position.X * CellSize.Width, player.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height);
                 player.DamageColor = null;
             }
         }
-        foreach (var player in currentMap.Bullets)
-            g.DrawImage(chest,
-                new Rectangle(player.Position.X * CellSize.Width, player.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height));
-    }
-
-    private void DrawAdditionalPaths(Graphics g, Point lastClick)
-    {
-        g.FillRectangle(Brushes.Red,
-            new Rectangle(lastClick.X * CellSize.Width, lastClick.Y * CellSize.Height, CellSize.Width, CellSize.Height));
-        foreach (var pathToChest in pathsToChests)
-            DrawPath(g, Color.Red, pathToChest);
     }
 
     private void DrawPath(Graphics g, Color color, IEnumerable<Point> path)
@@ -165,8 +112,8 @@ public class GameplayPainter
 
     private void RenderMap(Graphics g)
     {
-        var width = currentMap.Maze.GetLength(0);
-        var height = currentMap.Maze.GetLength(1);
+        var width = CurrentMap.Maze.GetLength(0);
+        var height = CurrentMap.Maze.GetLength(1);
 
         var cellWidth = grass.Size.Width;
         var cellHeight = grass.Size.Height;
@@ -175,9 +122,10 @@ public class GameplayPainter
         {
             for (var y = 0; y < height; y++)
             {
-                var image = currentMap.Maze[x, y] == MapCell.Wall ? grass : path;
+                var image = CurrentMap.Maze[x, y] == MapCell.Wall ? grass : path;
                 g.DrawImage(image, new Rectangle(x * cellWidth, y * cellHeight, cellWidth, cellHeight));
             }
         }
     }
+    #endregion
 }

@@ -1,69 +1,63 @@
-﻿using GangWarsArcade.views;
+﻿namespace GangWarsArcade.domain;
 
-namespace GangWarsArcade.domain;
-
-
-public class Map
+public class Map : IMapWithEntity
 {
     public MapCell[,] Maze { get; private set; }
-    public Point[] Buildings { get; private set; }
-    public Dictionary<Gang, Player> Players { get; private set; }
-    public Dictionary<Point, ItemType> Items { get; private set; }
-    public Dictionary<Point, OwnedLocation> OwnedLocations { get; private set; }
-    public List<Bullet> Bullets { get; private set; }
 
-    public Dictionary<Point, (Gang, ItemType)> Traps { get; private set; }
+    public Dictionary<Gang, Player> Players { get; private set; }
+    public Dictionary<Point, OwnedLocation> OwnedLocations { get; private set; }
+    public Building[] Buildings { get; private set; }
 
     public Player HumanPlayer { get; set; }
 
-    private Map(MapCell[,] maze, Point[] buildings, Dictionary<Point, ItemType> items, Dictionary<Gang, Player> players)
+    private Map(MapCell[,] maze, Building[] buildings, HashSet<IEntity> entities, Dictionary<Gang, Player> players)
     {
         Maze = maze;
         Buildings = buildings;
-        Items = items;
         Players = players;
         OwnedLocations = new Dictionary<Point, OwnedLocation>();
-        Bullets = new List<Bullet>();
-        Traps = new Dictionary<Point, (Gang, ItemType)>();
+
+        foreach (var player in Players.Values)
+            player.PlayerRespawned += AddEntity;
+
+        Entities = entities;
+    }
+
+    public HashSet<IEntity> Entities { get; private set; }
+
+    public void AddEntity(IEntity entity)
+    { 
+        Entities.Add(entity);
     }
 
     public void Update()
     {
-        foreach (var player in Players.Values.Where(p => p.IsAlive))
+        foreach (var entity in Entities.ToList())
         {
+            entity.Act(this);
+        }
+        foreach (var player in Players.Values.Where(p => p.IsActive))
+        { // коллизия (она вся крутится вокруг игроков, я не знаю как адекватно сделать по другому)
             player.Update(this);
+        }
+        foreach (var entity in Entities.Where(e => e.Type.Name != "Player").ToList()) 
+        { // обновление состояний объектов после коллизий (у игрока состояние уже обновлено)
+            entity.Update(this);
         }
         foreach (var building in Buildings)
         {
-            BuildingStateUpdate(building);
-        }
-        for (var i = 0; i < Bullets.Count; i++)
-        {
-            Bullets[i].Update(this);
+            building.Update(this);
         }
     }
 
-    private static readonly Point[] startPositions = new[]
-    {
-        new Point(1, 1),
-        new Point(1, 13),
-        new Point(19, 1),
-        new Point(19, 13)
-    };
-
     public void ResetMap()
     {
-        Bullets.Clear();
-        Traps.Clear();
-
-        var rand = new Random();
-        rand.Shuffle(startPositions);
-        for (var i = 0; i < startPositions.Length; i++)
-        {
-            Players[(Gang)i + 1].ResetPlayer(startPositions[i]);
-        }
+        Entities.Clear();
+        foreach (var player in Players.Values) 
+            Entities.Add(player);
 
         OwnedLocations = new Dictionary<Point, OwnedLocation>();
+        GenerateStartMap();
     }
 
     public bool InBounds(Point point)
@@ -71,53 +65,64 @@ public class Map
            && Maze.GetLength(0) > point.X
            && Maze.GetLength(1) > point.Y;
 
-    #region Building
-
-    private void BuildingStateUpdate(Point building)
+    #region GenerateStartMap
+    private static readonly (Point, Point, MoveDirection)[] startHomeLocation = new[]
     {
-        var result = IsBuildingCaptured(building);
-        if (result.Item1 == true)
-        {
-            if (result.Item2 != 0 && (!OwnedLocations.ContainsKey(building) || OwnedLocations[building].Owner != result.Item2))
-            {
-                OwnedLocations[building] = new OwnedLocation(result.Item2, building, 0);
-                Players[result.Item2].RespawnLocations.Add(OwnedLocations[building]);
-            }
-        }
-        else if (OwnedLocations.TryGetValue(building, out var value) && value != null)
-        {
-            Players[value.Owner].RespawnLocations.Remove(OwnedLocations[building]);
+        (new Point(2, 2), new Point(1, 4), MoveDirection.Right),
+        (new Point(2, 11), new Point(1, 10), MoveDirection.Right),
+        (new Point(17, 2), new Point(19, 4), MoveDirection.Left),
+        (new Point(17, 11), new Point(19, 10), MoveDirection.Left)
+    };
 
-            OwnedLocations.Remove(building);
-        }
-    }
-
-    private (bool, Gang) IsBuildingCaptured(Point point)
+    private static readonly Point[] notOwnedPoints = new[]
     {
-        var ownerId = (Gang)0;
-        foreach (var offset in offsetToSurroundingRoad)
-        { 
-            var newPoint = point + offset;
-            if (!OwnedLocations.TryGetValue(newPoint, out var owner)) return (false, 0);
+        new Point(2, 4),
+        new Point(3, 4),
+        new Point(4, 4),
+        new Point(2, 10),
+        new Point(3, 10),
+        new Point(4, 10),
+        new Point(16, 4),
+        new Point(17, 4),
+        new Point(18, 4),
+        new Point(16, 10),
+        new Point(17, 10),
+        new Point(18, 10),
+    };
 
-            if (ownerId == 0) ownerId = owner.Owner;
-            else if (ownerId != owner.Owner) return (false, 0);
-        }
-        return (true, ownerId);
-    }
-
-    private static readonly Point[] offsetToSurroundingRoad = new[]
+    private static readonly Point[] offsetToSurroundingRoads = new[]
     {
+        new Point(-1, -1),
         new Point(0, -1),
         new Point(1, -1),
+        new Point(2, -1),
         new Point(2, 0),
         new Point(2, 1),
+        new Point(2, 2),
         new Point(1, 2),
         new Point(0, 2),
+        new Point(-1, 2),
         new Point(-1, 1),
         new Point(-1, 0)
     };
-
+    private void GenerateStartMap()
+    {
+        var rand = new Random();
+        rand.Shuffle(startHomeLocation);
+        for (var i = 0; i < startHomeLocation.Length; i++)
+        {
+            for (var j = 0; j < offsetToSurroundingRoads.Length; j++)
+            {
+                var pos = startHomeLocation[i].Item1 + offsetToSurroundingRoads[j];
+                if (!notOwnedPoints.Contains(pos))
+                {
+                    OwnedLocations[pos] = new OwnedLocation((Gang)i + 1, pos, 0);
+                }
+            }
+            Players[(Gang)i + 1].ResetPlayer(startHomeLocation[i].Item2);
+            Players[(Gang)i + 1].SetNewDirection(startHomeLocation[i].Item3);
+        }
+    }
     #endregion
 
     #region Initialize game map
@@ -146,16 +151,16 @@ public class Map
 
     public static Map FromText(string text)
     {
-        var lines = text.Split(new[] { "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        var lines = text.Split(new[] { "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries); // new[] { Environment.NewLine }
         return FromLines(lines);
     }
 
     public static Map FromLines(string[] lines)
     {
         var dungeon = new MapCell[lines[0].Length, lines.Length];
+        var buildings = new List<Building>();
+        var entities = new HashSet<IEntity>();
         var players = new Dictionary<Gang, Player>();
-        var buildings = new List<Point>();
-        var items = new Dictionary<Point, ItemType>();
 
         var gang = (Gang)0;
         for (var y = 0; y < lines.Length; y++)
@@ -169,24 +174,25 @@ public class Map
                         break;
                     case 'P':
                         dungeon[x, y] = MapCell.Empty;
-                        gang++;
-                        players[gang] = new Player(new Point(x, y), gang);
+                        var player = new Player(new Point(x, y), ++gang);
+                        entities.Add(player);
+                        players[gang] = player;
                         break;
                     case 'H':
                         dungeon[x, y] = MapCell.Empty;
-                        items[new Point(x, y)] = ItemType.HPRegeneration;
+                        entities.Add(new Item(ItemType.HPRegeneration, new Point(x, y)));
                         break;
                     case 'T':
                         dungeon[x, y] = MapCell.Empty;
-                        items[new Point(x, y)] = ItemType.Trap;
+                        entities.Add(new Item(ItemType.Trap, new Point(x, y)));
                         break;
                     case 'C':
                         dungeon[x, y] = MapCell.Empty;
-                        items[new Point(x, y)] = ItemType.Pistol;
+                        entities.Add(new Item(ItemType.FireBolt, new Point(x, y)));
                         break;
                     case 'E':
                         dungeon[x, y] = MapCell.Wall;
-                        buildings.Add(new Point(x, y));
+                        buildings.Add(new Building(new Point(x, y)));
                         break;
                     default:
                         dungeon[x, y] = MapCell.Empty;
@@ -195,7 +201,7 @@ public class Map
             }
         }
 
-        return new Map(dungeon, buildings.ToArray(), items, players);
+        return new Map(dungeon, buildings.ToArray(), entities, players);
     }
 
     #endregion

@@ -2,7 +2,7 @@
 
 public enum ItemType
 {
-    Pistol = 1,
+    FireBolt = 1,
     HPRegeneration = 2,
     Trap = 3,
 }

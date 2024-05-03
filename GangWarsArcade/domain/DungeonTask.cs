@@ -8,6 +8,7 @@ public class DungeonTask
 {
     public static MoveDirection[] FindShortestPath(Map map)
     {
+        // пока так
         //var pathFromEndToStart = BfsTask.FindPaths(map, map.Exit, new Point[] { map.InitialPosition }); // оставить только два поиска!!
         //if (!pathFromEndToStart.Any()) return System.Array.Empty<MoveDirection>();
 

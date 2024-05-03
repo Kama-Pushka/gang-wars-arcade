@@ -31,7 +31,6 @@ public partial class MenuControl : UserControl
                 var button = sender as Button;
                 
                 playerGang = (Gang)button.Tag;
-                UpdateButtonsColors((Gang)button.Tag, buttons);
                 ShowStartGameButton();
             };
             Controls.Add(button);
@@ -57,13 +56,5 @@ public partial class MenuControl : UserControl
     private void ShowStartGameButton()
     {
         if (startGameButton.Visible == false) startGameButton.Visible = true;
-    }
-
-    private void UpdateButtonsColors(Gang gang, List<Button> linkLabels)
-    {
-        foreach (var linkLabel in linkLabels)
-        {
-            //linkLabel.BackColor = (Gang)linkLabel.Tag == gang ? Color.LimeGreen : Color.White;
-        }
     }
 }

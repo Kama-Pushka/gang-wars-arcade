@@ -5,7 +5,7 @@ namespace GangWarsArcade
 {
     public partial class MainForm : Form
     {
-        private GameplayControl gameplayControl;
+        private GameFiledControl gameplayControl;
         private TopbarControl topbarControl;
         private TableLayoutPanel tableLayoutPanel;
         private AlertControl alertControl;
@@ -22,8 +22,10 @@ namespace GangWarsArcade
 
         public void InitializeGameControls(Gang gang)
         {
-            gameplayControl = new GameplayControl(gang);
-            topbarControl = new TopbarControl(gameplayControl.GameMap.Players.Values.ToArray());
+            var gameState = new GameState(gang);
+            
+            gameplayControl = new GameFiledControl(gameState);
+            topbarControl = new TopbarControl(gameState, gameState.GameMap.Players.Values.ToArray());
 
             tableLayoutPanel = new TableLayoutPanel();
             tableLayoutPanel.RowStyles.Clear();
@@ -39,18 +41,16 @@ namespace GangWarsArcade
             gameplayControl.Dock = DockStyle.Fill;
 
             alertControl = new AlertControl();
-            alertControl.AlertShowed += gameplayControl.AlertShowed;
-            alertControl.AlertShowed += topbarControl.AlertShowed;
-            alertControl.AlertNotShowed += gameplayControl.AlertNotShowed;
-            alertControl.AlertNotShowed += topbarControl.AlertNotShowed;
-            alertControl.StartingNewRound += gameplayControl.SetNewRound;
-            alertControl.StartingNewRound += topbarControl.SetNewRound;
-            alertControl.CheckForFinishGame += topbarControl.CheckForFinishGame;
-            topbarControl.RoundFinished += alertControl.ShowAlert;
-            topbarControl.GameFinished += RemoveGameControls;
+            alertControl.AlertShowed += gameState.PauseGame;
+            alertControl.AlertHided += gameState.RunGame;
+            alertControl.StartingNewRound += gameState.SetNewRound;
+            alertControl.CheckForFinishGame += gameState.CheckForFinishGame;
+            
+            gameState.RoundFinished += alertControl.SetAlert;
+            gameState.GameFinished += RemoveGameControls;
 
-            gameplayControl.GameMap.HumanPlayer.OnPlayerWasted += alertControl.ShowWastedAlert;
-            gameplayControl.Paused += alertControl.ShowAlert;
+            gameState.GameMap.HumanPlayer.OnPlayerWasted += alertControl.ShowWastedAlert;
+            gameplayControl.PausingGame += alertControl.SetAlert;
             gameplayControl.Focus();
 
             Controls.Add(alertControl);

@@ -33,7 +33,7 @@ public class Direction
         return offsetToDirection[offset];
     }
 
-    public static Point ConvertDirectionToOffset(MoveDirection direction)
+    public static Point ConvertDirectionToOffset(MoveDirection direction) 
     {
         return directionToOffset[direction];
     }

@@ -83,6 +83,16 @@ namespace GangWarsArcade.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap FireBolt {
+            get {
+                object obj = ResourceManager.GetObject("FireBolt", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Grass {
             get {
                 object obj = ResourceManager.GetObject("Grass", resourceCulture);
@@ -106,6 +116,56 @@ namespace GangWarsArcade.Properties {
         internal static System.Drawing.Bitmap Peasant {
             get {
                 object obj = ResourceManager.GetObject("Peasant", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Peon {
+            get {
+                object obj = ResourceManager.GetObject("Peon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PotionRed {
+            get {
+                object obj = ResourceManager.GetObject("PotionRed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Priest {
+            get {
+                object obj = ResourceManager.GetObject("Priest", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SkeletonWarrior {
+            get {
+                object obj = ResourceManager.GetObject("SkeletonWarrior", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Trap {
+            get {
+                object obj = ResourceManager.GetObject("Trap", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

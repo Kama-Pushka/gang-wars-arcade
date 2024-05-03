@@ -6,10 +6,11 @@ namespace GangWarsArcade.views;
 
 public partial class AlertControl : UserControl
 {
-    public event Action<AlertPropertiesEnums> AlertShowed;
+    public event Action AlertShowed;
+    public event Action AlertHided;
+
     public event Action<bool> CheckForFinishGame;
     public event Action StartingNewRound;
-    public event Action AlertNotShowed;
 
     private readonly Timer timer;
     private int timeLeft;
@@ -22,9 +23,6 @@ public partial class AlertControl : UserControl
     public AlertControl()
     {
         InitializeComponent();
-        //SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-        //SetStyle(ControlStyles.Opaque, true);
-        //BackColor = Color.Transparent;
 
         // Initialize countdown timer
         timer = new Timer { Interval = 1000 };
@@ -86,39 +84,46 @@ public partial class AlertControl : UserControl
         if (timeLeft > 0)
         {
             timeLeft--;
-
-            if (currentOption == AlertPropertiesEnums.RoundStarting)
+            switch (currentOption)
             {
-                DynamicText.Text = timeLeft.ToString();
-            }
-            else if (currentOption == AlertPropertiesEnums.HumanPlayerWasted)
-            {
-                if (timeLeft == 5)
-                {
-                    DynamicText.Text = "Ready?";
-                }
-                else if (timeLeft == 2)
-                {
-                    DynamicText.Text = "Fight!";
-                }
+                case AlertPropertiesEnums.RoundStarting:
+                    DynamicText.Text = timeLeft.ToString();
+                    break;
+                case AlertPropertiesEnums.HumanPlayerWasted:
+                    if (timeLeft == 5)
+                    {
+                        DynamicText.Text = "Ready?";
+                    }
+                    else if (timeLeft == 2)
+                    {
+                        DynamicText.Text = "Fight!";
+                        // TODO сделать серый фон, но здесь он убирается
+                    }
+                    break;
+                case AlertPropertiesEnums.RoundFinished:
+                    break;
+                default:
+                    throw new ArgumentException("Было создано уведомление с неправильными параметрами.");
             }
         }
         else
         {
-            if (currentOption == AlertPropertiesEnums.RoundFinished)
+            switch (currentOption)
             {
-                CheckForFinishGame(false);
-                ShowAlert(new AlertProperties(this, AlertPropertiesEnums.RoundStarting));
-            }
-            else if (currentOption == AlertPropertiesEnums.RoundStarting)
-            {
-                StartingNewRound();
-                HideAlert();
-            }
-            else if (currentOption == AlertPropertiesEnums.HumanPlayerWasted)
-            {
-                // пусто
-                HideAlert();
+                case AlertPropertiesEnums.RoundFinished:
+                    CheckForFinishGame(false); 
+                    StartingNewRound();
+                    SetAlert(new AlertProperties(this, AlertPropertiesEnums.RoundStarting));
+                    break;
+                case AlertPropertiesEnums.RoundStarting:
+                    HideAlert();
+                    break;
+                case AlertPropertiesEnums.HumanPlayerWasted:
+                    // пусто
+                    HideAlert();
+                    break;
+                default:
+                    throw new ArgumentException("Было создано уведомление с неправильными параметрами.");
             }
         }
     }
@@ -127,78 +132,92 @@ public partial class AlertControl : UserControl
     {
         Hide();
         timer.Stop();
-        AlertNotShowed();
+        AlertHided();
     }
 
     // Public methods //
 
     public void SetupGame()
     {
-        ShowAlert(new AlertProperties(this, AlertPropertiesEnums.RoundStarting));
+        SetAlert(new AlertProperties(this, AlertPropertiesEnums.RoundStarting));
     }
 
     public void ShowWastedAlert(Player player)
     { 
-
-        ShowAlert(new AlertProperties(this, AlertPropertiesEnums.HumanPlayerWasted, player));
+        SetAlert(new AlertProperties(this, AlertPropertiesEnums.HumanPlayerWasted, player));
     }
 
-    public void ShowAlert(AlertProperties option)
+    public void SetAlert(AlertProperties option)
     {
         currentOption = option.Option;
         timeLeft = (int)option.Option;
-
         switch(currentOption) 
         {
             case AlertPropertiesEnums.RoundStarting:
-            {
-                DynamicText.Text = timeLeft.ToString();
-                DynamicText.Location = new Point(0, 20);
-                timer.Start();
+                SetupRoundStartingAlert();
                 break;
-            }
             case AlertPropertiesEnums.HumanPlayerWasted:
-            {
-                DynamicText.Text = "Wasted!";
-                DynamicText.Location = new Point(0, 20);
-                var player = option.Tag as Player;
-                if (player.OwnedBuildings != 0) timer.Start();
+                SetupHumanPlayerWastedAlert((Player)option.Tag);
                 break;
-            }
             case AlertPropertiesEnums.RoundFinished:
-            {
-                var player = option.Tag as Player;
-                DynamicText.Location = new Point(0, 20);
-                DynamicText.Size = new Size(100, 100);
-                var sender = (TopbarControl)option.Sender;
-                if (player == null)
-                {
-                    DynamicText.Text = string.Format("Ничья!");
-                }
-                else
-                {
-                    DynamicText.Text = string.Format("Player {0} win", player.Gang);
-                    sender.roundsWinners[sender.numСompletedRound++] = player.Gang;
-                }
-                timer.Start();
+                SetupRoundFinishedAlert(option);
                 break;
-            }
             case AlertPropertiesEnums.Pause:
-            {
-                DynamicText.Text = "Menu";
-                foreach (var button in pauseMenu)
-                    button.Visible = true;
+                SetupPauseAlert();
                 break;
-            }
             default:
                 throw new ArgumentException("Было создано уведомление с неправильными параметрами.");
         }
-
-        Show();
-        AlertShowed(option.Option);
+        ShowAlert();
     }
 
-    // Control from keys
+    private void SetupRoundStartingAlert()
+    {
+        DynamicText.Text = timeLeft.ToString();
+        DynamicText.Location = new Point(0, 20);
+        timer.Start();
+    }
+
+    private void SetupHumanPlayerWastedAlert(Player player)
+    {
+        DynamicText.Text = "Wasted!";
+        DynamicText.Location = new Point(0, 20);
+        if (player.IsActive) timer.Start(); // else он не может возродится и до конца раунда должен висеть текст Wasted!
+    }
+
+    private void SetupRoundFinishedAlert(AlertProperties option)
+    {
+        var player = option.Tag as Player;
+        DynamicText.Location = new Point(0, 20);
+        DynamicText.Size = new Size(100, 100);
+        
+        var sender = (GameState)option.Sender;
+        if (player == null)
+        {
+            DynamicText.Text = string.Format("Ничья!");
+        }
+        else
+        {
+            DynamicText.Text = string.Format("Player {0} win", player.Gang);
+            sender.RoundsWinners[sender._numСompletedRound++] = player.Gang;
+        }
+        timer.Start();
+    }
+
+    private void SetupPauseAlert()
+    {
+        DynamicText.Text = "Menu";
+        foreach (var button in pauseMenu)
+            button.Visible = true;
+    }
+
+    private void ShowAlert()
+    {
+        Show();
+        if (currentOption != AlertPropertiesEnums.HumanPlayerWasted) AlertShowed();
+    }
+
+    // Control from keys (типа методы которые запускаются если человек тыкает) //
 
     public void ResumeToGameFromPause(object sender, KeyEventArgs e)
     {
@@ -210,6 +229,7 @@ public partial class AlertControl : UserControl
 }
 
 // Auxiliary data types AlertProperties //
+// TODO вынести в отдельные файлы
 
 public enum AlertPropertiesEnums
 {

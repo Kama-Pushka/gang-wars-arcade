@@ -32,8 +32,8 @@
             // 
             // TopbarControl
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
+            //AutoScaleDimensions = new SizeF(8F, 20F);
+            //AutoScaleMode = AutoScaleMode.Font;
             Name = "TopbarControl";
             Size = new Size(800, 100);
             ResumeLayout(false);

@@ -6,26 +6,28 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace GangWarsArcade.views;
 
-public partial class InventoryControl : UserControl
-{
+public partial class InventoryControl : UserControl {
     private Bitmap _gunImage;
     private Bitmap _perkImage;
 
-    private Point _gunImagePosition = new Point(0, 10);
-    private Point _perkImagePosition = new Point(66, 10);
+    private Point _gunImagePosition = new Point(0, 0);
+    private Point _perkImagePosition = new Point(66, 0);
     private Size cellSize = new Size(64, 66);
 
     private Timer _gunCooldown;
 
-    public InventoryControl()
+    public InventoryControl(Point location)
     {
         InitializeComponent();
         SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+        SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+        BackColor = Color.Transparent;
+        Enabled = false;
 
         Paint += OnPaint;
 
-        Location = new Point(1500, 0);
-        Size = new Size(132, 90);
+        Location = location;
+        Size = new Size(131, 67);
 
         _gunCooldown = new Timer();
         _gunCooldown.Stop();
@@ -38,8 +40,7 @@ public partial class InventoryControl : UserControl
         _gunCooldown.Interval = interval;
         _gunCooldown.Tick += TimerTick;
         _gunCooldown.Start();
-        Invalidate();
-    }
+        Invalidate();     }
 
     private void TimerTick(object sender, EventArgs e)
     {
@@ -48,8 +49,7 @@ public partial class InventoryControl : UserControl
     }
 
     public void Update(Player player)
-    { // затычка
-        if (player.Weapon != 0) _gunImage = Resource.FireBolt;
+    {         if (player.Weapon != 0) _gunImage = Resource.FireBolt;
         else _gunImage = null;
         if (player.Inventory != 0) _perkImage = Resource.Trap;
         else _perkImage = null;
@@ -57,17 +57,22 @@ public partial class InventoryControl : UserControl
     }
 
     public void OnPaint(object sender, PaintEventArgs e)
-    { 
+    {
         var g = e.Graphics;
 
         g.DrawRectangle(new Pen(Color.Black), new Rectangle(_gunImagePosition, cellSize));
+        g.FillRectangle(new SolidBrush(Color.FromArgb(150, Color.Gray.R, Color.Gray.G, Color.Gray.B)),
+               new Rectangle(_gunImagePosition, cellSize));
         g.DrawRectangle(new Pen(Color.Black), new Rectangle(_perkImagePosition, cellSize));
+        g.FillRectangle(new SolidBrush(Color.FromArgb(150, Color.Gray.R, Color.Gray.G, Color.Gray.B)),
+               new Rectangle(_perkImagePosition, cellSize));
 
-        if (_gunImage != null) g.DrawImage(_gunImage, _gunImagePosition);
-        if (_perkImage != null) g.DrawImage(_perkImage, _perkImagePosition);
+        if (_gunImage != null)
+            g.DrawImage(_gunImage, _gunImagePosition.X, _gunImagePosition.Y, 64, 64);         if (_perkImage != null)
+            g.DrawImage(_perkImage, _perkImagePosition.X, _perkImagePosition.Y, 64, 64);
 
-        if (_gunCooldown.Enabled) 
-            g.FillRectangle(new SolidBrush(Color.FromArgb(150, Color.Gray.R, Color.Gray.G, Color.Gray.B)), 
+        if (_gunCooldown.Enabled)
+            g.FillRectangle(new SolidBrush(Color.FromArgb(150, Color.Gray.R, Color.Gray.G, Color.Gray.B)),
                 new Rectangle(_gunImagePosition, cellSize));
     }
 }

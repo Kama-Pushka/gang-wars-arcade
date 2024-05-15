@@ -1,44 +1,28 @@
 ﻿using GangWarsArcade.domain;
-
 using Timer = System.Windows.Forms.Timer;
 
 namespace GangWarsArcade.views;
 
+
 public class GameState
 {
-    private const int roundDurationSeconds = 30;
-
-    public event Action<AlertProperties> RoundFinished;
-    public event Action GameFinished;
-    public event Action InvalidateTopbarVisual;
-
-    public Map GameMap => GameplayPainter.CurrentMap;
-    public readonly GameplayPainter GameplayPainter;
-
-    public int RoundNumber { get => _numRound; private set { _numRound = value; } }
-    private int _numRound;
-    public int _numСompletedRound;
-    public readonly Gang[] RoundsWinners = new Gang[5];
-
-    public int TimeLeft { get => _timeLeft; private set { _timeLeft = value; } }
-    private int _timeLeft;
-    private readonly Timer _mapUpdateTimer;
-    private readonly Timer _gameTimer;
+    private const int roundDurationSeconds = 10;  
+    public event Action<Player> RoundFinished;     public event Action GameFinished;     public event Action InvalidateTopbarVisual; 
+    public Map GameMap => GameplayPainter.CurrentMap;     public readonly GameplayPainter GameplayPainter; 
+        public int RoundNumber { get => _numRound; private set { _numRound = value; } }     private int _numRound;
+    public int _numСompletedRound;     public readonly Gang[] RoundsWinners = new Gang[5]; 
+    public int TimeLeft { get => _timeLeft; private set { _timeLeft = value; } }      private int _timeLeft;     private readonly Timer _mapUpdateTimer;     private readonly Timer _gameTimer;
 
     public GameState(Gang gang)
     {
-        // Initialize game map and map painter
-        var map = Map.InitializeMap();
+                var map = Map.InitializeMap();
         GameplayPainter = new GameplayPainter(map);
-        GameMap.HumanPlayer = GameMap.Players[gang]; 
-        GameMap.HumanPlayer.IsHumanPlayer = true;
+        GameMap.HumanPlayer = GameMap.Players[gang];         GameMap.HumanPlayer.IsHumanPlayer = true;
 
-        // Initialize map painter timer
-        _mapUpdateTimer = new Timer { Interval = 160 }; // 60
-        _mapUpdateTimer.Tick += UpdateGamePainter;
+                
+                _mapUpdateTimer = new Timer { Interval = 160 };         _mapUpdateTimer.Tick += UpdateGamePainter;
 
-        // Initialize game timer
-        _gameTimer = new Timer { Interval = 1000 };
+                _gameTimer = new Timer { Interval = 1000 };
         _gameTimer.Tick += GameTimerTick;
 
         _timeLeft = roundDurationSeconds;
@@ -52,8 +36,7 @@ public class GameState
 
     private void GameTimerTick(object sender, EventArgs e)
     {
-        var earlyFinish = СheckForEarlyFinishRound(out var winner);
-        if (_timeLeft > 0 && !earlyFinish)
+        var earlyFinish = СheckForEarlyFinishRound(out var winner);         if (_timeLeft > 0 && !earlyFinish)
         {
             _timeLeft--;
             InvalidateTopbarVisual();
@@ -70,26 +53,23 @@ public class GameState
         }
     }
 
-    private bool СheckForEarlyFinishRound(out Player? winner) // Обновление Player bar и проверка крайних случаев завершения игры (все погибли и не могут возродится или остался только один игрок)
-    {
+            private bool СheckForEarlyFinishRound(out Player? winner)     {
         winner = null;
-        var activePlayers = GameMap.Players.Values;
+        var activePlayers = GameMap.Players;
         if (activePlayers.Count == 0) return true;
         if (activePlayers.Count == 1)
         {
-            winner = activePlayers.First();
-            return true;
+                        return true;
         }
         return false;
     }
 
     private void FinishRound(Player winner)
     {
-        RoundFinished(new AlertProperties(this, AlertPropertiesEnums.RoundFinished, winner));
-    }
+        if (winner != null) RoundsWinners[_numСompletedRound++] = winner.Gang;
+        RoundFinished(winner);     }
 
-    // Public methods //
-
+    
     public void PauseGame()
     {
         _mapUpdateTimer.Stop();
@@ -102,17 +82,18 @@ public class GameState
         _gameTimer.Start();
     }
 
-    public void SetNewRound()
-    {
+        public void PrepareNewRound()     {
         GameplayPainter.ResetMap();
-        _numRound++; // RoundNumber++;
-
+        _numRound++; 
         _timeLeft = roundDurationSeconds;
-        InvalidateTopbarVisual();
+        InvalidateTopbarVisual();     }
+
+    public void CheckForFinishGame()     {
+        if (_numСompletedRound == 5) GameFinished();
     }
 
-    public void CheckForFinishGame(bool kostil)
+    public void FinishGame()
     {
-        if (_numСompletedRound == 5 || kostil) GameFinished();
+        GameFinished();
     }
 }

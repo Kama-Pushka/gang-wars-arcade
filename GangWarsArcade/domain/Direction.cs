@@ -2,11 +2,10 @@
 
 public enum MoveDirection
 {
-    Up = Keys.W,
-    Down = Keys.S,
+    Left = Keys.A,
     Right = Keys.D,
-    Left = Keys.A
-}
+    Down = Keys.S,
+    Up = Keys.W }
 
 public class Direction
 {
@@ -26,15 +25,12 @@ public class Direction
         { new Point(1, 0), MoveDirection.Right }
     };
 
-    public static readonly IReadOnlyList<Point> PossibleDirections = offsetToDirection.Keys.ToList();
-
-    public static MoveDirection ConvertOffsetToDirection(Point offset)
-    {
+    public static readonly IReadOnlyList<Point> PossibleDirections = offsetToDirection.Keys.ToList(); 
+    public static MoveDirection ConvertOffsetToDirection(Point offset)     {
         return offsetToDirection[offset];
     }
 
-    public static Point ConvertDirectionToOffset(MoveDirection direction) 
-    {
+    public static Point ConvertDirectionToOffset(MoveDirection direction)     {
         return directionToOffset[direction];
     }
 }

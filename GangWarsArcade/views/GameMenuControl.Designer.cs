@@ -1,6 +1,6 @@
 ﻿namespace GangWarsArcade.views
 {
-    partial class InventoryControl
+    partial class GameMenuControl
     {
         /// <summary> 
         /// Обязательная переменная конструктора.

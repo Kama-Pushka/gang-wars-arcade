@@ -8,8 +8,6 @@ public class Trap : IEntity
 
     public int HP { get; private set; }
 
-    public Type Type => typeof(Trap);
-
     public bool IsActive { get; private set; }
 
     public Bitmap Image { get; }
@@ -27,7 +25,7 @@ public class Trap : IEntity
         Image = Resource.Trap;
     }
 
-    public void Act(Map map)
+    public void Move(Map map)
     {
     }
 
@@ -42,18 +40,20 @@ public class Trap : IEntity
 
     public void CollisionWith(IEntity rival)
     {
-        switch (rival.Type.Name)
+        if (rival is Player player)
         {
-            case "Player":
-                var player = (Player)rival;
-                if (player.Gang != Owner)
-                    GetHit();
-                break;
+            if (player.Gang != Owner)
+                GetHit();
         }
     }
 
     private void GetHit()
     {
         HP--;
+    }
+
+    public void Act(Map map)
+    {
+        
     }
 }

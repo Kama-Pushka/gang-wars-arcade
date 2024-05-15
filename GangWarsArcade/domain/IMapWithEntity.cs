@@ -2,5 +2,4 @@
 
 public interface IMapWithEntity
 {
-    HashSet<IEntity> Entities { get; }
-}
+    HashSet<IEntity> Entities { get; } }

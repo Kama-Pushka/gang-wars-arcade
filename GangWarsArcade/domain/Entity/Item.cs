@@ -2,14 +2,11 @@
 
 namespace GangWarsArcade.domain;
 
-// по сути это просто обертка над ItemType
-public class Item : IEntity
+ public class Item : IEntity
 {
     public ItemType ItemType;
 
     public int HP { get; private set; }
-
-    public Type Type => typeof(Item);
 
     public bool IsActive { get; private set; }
 
@@ -42,7 +39,7 @@ public class Item : IEntity
         return Resource.Chest;
     }
 
-    public void Act(Map map)
+    public void Move(Map map)
     {
     }
 
@@ -57,16 +54,19 @@ public class Item : IEntity
 
     public void CollisionWith(IEntity rival) 
     {
-        switch (rival.Type.Name)
+        if (rival is Player)
         {
-            case "Player":
-                GetHit();
-                break;
+            GetHit();
         }
     }
 
     private void GetHit()
     {
         HP--;
+    }
+
+    public void Act(Map map)
+    {
+        
     }
 }

@@ -2,8 +2,7 @@
 
 public class OwnedLocation
 {
-    public Gang Owner { get; set; }
-    public readonly Point Location;
+    public Gang Owner { get; set; }     public readonly Point Location;
     public readonly int Distance;
 
     public OwnedLocation(Gang owner, Point location, int distance)

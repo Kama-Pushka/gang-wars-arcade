@@ -8,17 +8,17 @@ public class GameplayPainter
 {
     public event Action InvalidateVisual;
 
-    public readonly Map CurrentMap;
-
+    public readonly Map CurrentMap;     
     private Bitmap grass;
     private Bitmap path;
+    private Bitmap peasant;
     private Bitmap castle;
+    private Bitmap chest;
 
     private Size CellSize => grass.Size;
 
-    public static readonly SolidBrush[] colourValues = new[]
-    {
-        "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF", "#000000",
+    public static readonly SolidBrush[] colourValues = new[]     {
+        "#FF0000", "#00FF00", "#FF00FF", "#FFFF00", "#0000FF", "#00FFFF", "#000000",
         "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080"
     }.Select(c => new SolidBrush(ColorTranslator.FromHtml(c))).ToArray();
 
@@ -26,8 +26,7 @@ public class GameplayPainter
     {
         CurrentMap = map;
         
-        // Load resources
-        grass = Resource.Grass;
+                grass = Resource.Grass;
         path = Resource.Path;
         peasant = Resource.Peasant;
         castle = Resource.Castle;
@@ -36,8 +35,7 @@ public class GameplayPainter
 
     public void ResetMap()
     {
-        CurrentMap.ResetMap();
-        InvalidateVisual();
+        CurrentMap.ResetMap();          InvalidateVisual();
     }
 
     public void Update()
@@ -60,8 +58,8 @@ public class GameplayPainter
     {
         RenderMap(g);
         foreach (var building in CurrentMap.Buildings)
-            g.DrawImage(castle,
-                new Rectangle(building.Location.X * CellSize.Width, building.Location.Y * CellSize.Height, CellSize.Width, CellSize.Height));
+            g.DrawImage(building.Image,
+                new Rectangle(building.Location.X * CellSize.Width, building.Location.Y * CellSize.Height, CellSize.Width * 2, CellSize.Height * 2));
     }
 
     private void DrawOwnedLocations(Graphics g)
@@ -79,11 +77,11 @@ public class GameplayPainter
 
     private void DrawEntity(Graphics g)
     {
-        foreach (var entity in CurrentMap.Entities.Where(e => e.Type.Name != "Player"))
+        foreach (var entity in CurrentMap.Entities.Where(e => e is not Player))
             g.DrawImage(entity.Image,
                 new Rectangle(entity.Position.X * CellSize.Width, entity.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height));
 
-        foreach (var entity in CurrentMap.Entities.Where(e => e.Type.Name == "Player"))
+        foreach (var entity in CurrentMap.Entities.Where(e => e is Player))
         {
             g.DrawImage(entity.Image,
                 new Rectangle(entity.Position.X * CellSize.Width, entity.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height));
@@ -92,9 +90,14 @@ public class GameplayPainter
             if (player.DamageColor != null)
             {
                 g.FillRectangle(player.DamageColor, 
-                    player.Position.X * CellSize.Width, player.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height);
-                player.DamageColor = null;
+                    player.Position.X * CellSize.Width, player.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height);                 player.DamageColor = null;
             }
+        }
+
+                foreach (var player in CurrentMap.Players.Values.Where(p => p.IsAlive))
+        {
+
+            
         }
     }
 
@@ -104,8 +107,7 @@ public class GameplayPainter
             new PointF(x.X * CellSize.Width + CellSize.Width * 0.5f, x.Y * CellSize.Height + CellSize.Height * 0.5f)).ToArray();
         var pen = new Pen(color, CellSize.Height * 0.125f)
         {
-            DashPattern = [CellSize.Width * 0.075f, CellSize.Height * 0.025f] //var newStyle = new DashStyle(new[] { CellSize.Width * 0.125f, CellSize.Height * 0.125f }, 1d);
-        };
+            DashPattern = [CellSize.Width * 0.075f, CellSize.Height * 0.025f]         };
         for (var i = 0; i < points.Length - 1; i++)
             g.DrawLine(pen, points[i], points[i + 1]);
     }

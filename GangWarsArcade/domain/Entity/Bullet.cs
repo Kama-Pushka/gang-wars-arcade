@@ -4,11 +4,7 @@ namespace GangWarsArcade.domain;
 
 public class Bullet : IEntity
 {
-    public MoveDirection Direction { get; }
-    public Point Position { get; set; }
-    public Gang Owner { get; }
-
-    public Type Type => typeof(Bullet);
+    public MoveDirection Direction { get; }     public Point Position { get; set; }     public Gang Owner { get; }
 
     public bool IsActive { get; private set; }
 
@@ -22,20 +18,17 @@ public class Bullet : IEntity
         Position = position;
         Owner = owner;
         IsActive = true;
-        HP = 1; // TODO const
-
+        HP = 1; 
         Image = Resource.FireBolt;
     }
 
-    public void Act(Map map)
+    public void Move(Map map)
     {
         WalkInDirection(map);
     }
 
-    public void Update(IMapWithEntity map)
-    {
-        if (HP <= 0)
-        {
+    public void Update(IMapWithEntity map)     {
+        if (HP <= 0)         {
             map.Entities.Remove(this);
             IsActive = false;
         }
@@ -44,29 +37,22 @@ public class Bullet : IEntity
 
     public void CollisionWith(IEntity rival)
     {
-        switch (rival.Type.Name)
+        if (rival is Player player)
         {
-            case "Player":
-                var player = (Player)rival;
-                if (player.Gang != Owner)
-                    GetHit();
-                break;
-        }
+            if (player.Gang != Owner)
+                GetHit();         }
     }
 
-    private void WalkInDirection(Map map)
-    {
+    private void WalkInDirection(Map map)     {
         if (Direction != 0)
         {
             var newPoint = Position + directionToOffset[Direction];
-            if (map.InBounds(newPoint) && map.Maze[newPoint.X, newPoint.Y] != MapCell.Wall)
-            {
+            if (map.InBounds(newPoint) && map.Maze[newPoint.X, newPoint.Y] != MapCell.Wall)             {
                 Position = newPoint;
             }
             else 
             {
-                map.Entities.Remove(this);
-                IsActive = false;
+                map.Entities.Remove(this);                 IsActive = false;
             }
         }
     }
@@ -74,10 +60,14 @@ public class Bullet : IEntity
     private void GetHit()
     {
         HP--;
+            }
+
+    public void Act(Map map)
+    {
+        
     }
 
-    private static readonly Dictionary<MoveDirection, Point> directionToOffset = new() // TODO
-    {
+    private static readonly Dictionary<MoveDirection, Point> directionToOffset = new()     {
         { MoveDirection.Up, new Point(0, -1) },
         { MoveDirection.Down, new Point(0, 1) },
         { MoveDirection.Left, new Point(-1, 0) },

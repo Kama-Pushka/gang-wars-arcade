@@ -1,4 +1,7 @@
-﻿namespace GangWarsArcade.domain;
+﻿using GangWarsArcade.domain;
+using Point = GangWarsArcade.domain.Point;
+
+namespace GangWarsArcade.AI;
 
 public class RivalsTask
 {
@@ -25,7 +28,7 @@ public class RivalsTask
             var player = queue.Dequeue();
             var incidentPoints = d
                 .Select(p => new Point(player.X + p.X, player.Y + p.Y))
-                .Where(p => map.InBounds(p) && map.Maze[p.X, p.Y] == MapCell.Empty);
+                .Where((Func<Point, bool>)(p => map.InBounds(p) && map.Maze[p.X, p.Y] == MapCell.Empty));
 
             foreach (var point in incidentPoints)
             {

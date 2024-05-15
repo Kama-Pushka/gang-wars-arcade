@@ -8,8 +8,7 @@ public static class PlayerExtensions
 
     public static MoveDirection GetRandomMoveDirection(this Player player)
     {
-        ArgumentNullException.ThrowIfNull(player); // TODO ??
-
+        ArgumentNullException.ThrowIfNull(player); 
         var ran = random.Next(4);
 
         if (ran >= 3) return MoveDirection.Right; 

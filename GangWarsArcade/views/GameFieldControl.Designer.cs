@@ -32,9 +32,9 @@
             // 
             // DungeonTaskControl
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            AutoValidate = AutoValidate.EnablePreventFocusChange;
+            //AutoScaleDimensions = new SizeF(8F, 20F);
+            //AutoScaleMode = AutoScaleMode.Font;
+            AutoValidate = AutoValidate.EnablePreventFocusChange; //??
             Name = "DungeonTaskControl";
             Size = new Size(1344, 1344);
             ResumeLayout(false);

@@ -3,7 +3,7 @@
 public enum Gang
 {
     Green = 1, // Hoods
-    Blue = 2, // Punks
+    Pink = 2, // Punks
     Yellow = 3, // Yokels
-    Pink = 4 // Bikers
+    Blue = 4 // Bikers
 }

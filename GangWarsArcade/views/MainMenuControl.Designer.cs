@@ -1,6 +1,6 @@
 ﻿namespace GangWarsArcade.views
 {
-    partial class MenuControl
+    partial class MainMenuControl
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -32,8 +32,8 @@
             // 
             // MenuControl
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
+            //AutoScaleDimensions = new SizeF(8F, 20F);
+            //AutoScaleMode = AutoScaleMode.Font;
             Name = "MenuControl";
             Size = new Size(1399, 436);
             ResumeLayout(false);

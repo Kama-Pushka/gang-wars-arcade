@@ -1,5 +1,4 @@
 ﻿using GangWarsArcade.Properties;
-using System.Drawing.Text;
 
 namespace GangWarsArcade.views;
 
@@ -21,7 +20,7 @@ public partial class GameMenuControl : UserControl
     private PictureBox _useInventoryImage;
     private Button _back;
 
-    public GameMenuControl(Point location, PrivateFontCollection font)
+    public GameMenuControl(Point location, FontFamily font)
     {
         InitializeComponent();
         Location = location;
@@ -36,7 +35,7 @@ public partial class GameMenuControl : UserControl
         _menuTitle = new Label() 
         { 
             Text = "Menu", 
-            Font = new Font(font.Families[0], 18), 
+            Font = new Font(font, 18), 
             Location = new Point(Size.Width / 2 - 35, 10) 
         };
         Controls.Add(_menuTitle);
@@ -47,13 +46,13 @@ public partial class GameMenuControl : UserControl
         Hide();
     }
 
-    private void InitializeControlMenu(PrivateFontCollection font)
+    private void InitializeControlMenu(FontFamily font)
     {
         _text = new Label
         {
             Text = "Set move direction:\n\nFire:\n\nUse inventory item:",
             TextAlign = ContentAlignment.MiddleCenter,
-            Font = new Font(font.Families[0], 20),
+            Font = new Font(font, 20),
             Location = new Point(10, 60),
             Size = new Size(150, 300)
         };

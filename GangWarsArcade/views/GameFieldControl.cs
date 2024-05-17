@@ -1,5 +1,4 @@
 ﻿using GangWarsArcade.domain;
-using System.Drawing.Text;
 using Point = System.Drawing.Point;
 
 namespace GangWarsArcade.views;
@@ -12,7 +11,7 @@ public partial class GameFiledControl : UserControl
     private readonly InventoryControl _inventoryHumanPlayer;
     private readonly AlertControl _alertControl;
 
-    public GameFiledControl(GameState gameState, Point location, Size size, PrivateFontCollection fonts)
+    public GameFiledControl(GameState gameState, Point location, Size size, FontFamily fonts)
     {
         InitializeComponent();
         SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);

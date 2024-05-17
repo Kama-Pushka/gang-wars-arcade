@@ -1,5 +1,4 @@
 ﻿using GangWarsArcade.domain;
-using System.Drawing.Text;
 using Point = System.Drawing.Point;
 
 namespace GangWarsArcade.views;
@@ -11,7 +10,7 @@ public partial class PlayerBarControl : UserControl
 
     private Pen _border;
 
-    public PlayerBarControl(Player player, PrivateFontCollection font)
+    public PlayerBarControl(Player player, FontFamily font)
     {
         InitializeComponent();
         Size = new Size(210, 75);
@@ -23,14 +22,14 @@ public partial class PlayerBarControl : UserControl
         CreatePlayerBar(player, font);
     }
 
-    private void CreatePlayerBar(Player player, PrivateFontCollection font)
+    private void CreatePlayerBar(Player player, FontFamily font)
     {
         Invalidate();
         _player = new Label
         {
             Size = new Size(160, 70),
             Location = new Point(3, 2),
-            Font = new Font(font.Families[0], 24),
+            Font = new Font(font, 24),
             Text = string.Format("HP: {0}", player.HP),
             ForeColor = GameplayPainter.ColourValues[(int)player.Gang % GameplayPainter.ColourValues.Length].Color,
             TextAlign = ContentAlignment.MiddleRight,
@@ -42,7 +41,7 @@ public partial class PlayerBarControl : UserControl
         _ownedLocation = new Label 
         { 
             BackColor = Color.Transparent, 
-            Font = new Font(font.Families[0], 24), 
+            Font = new Font(font, 24), 
             Size = new Size(45, 70), 
             Text = $"{player.OwnedBuildingsCount}",
             ForeColor = GameplayPainter.ColourValues[(int)player.Gang % GameplayPainter.ColourValues.Length].Color,

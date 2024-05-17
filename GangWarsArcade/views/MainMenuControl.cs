@@ -16,12 +16,12 @@ public partial class MainMenuControl : UserControl
 
     private readonly Button startGameButton;
 
-    public MainMenuControl(Size size, PrivateFontCollection font)
+    public MainMenuControl(Size size, FontFamily font)
     {
         InitializeComponent();
         Size = size;
         BackColor = Color.Black;
-        Font = new Font(font.Families[0], 36);
+        Font = new Font(font, 36);
 
         _mark = new PictureBox
         {

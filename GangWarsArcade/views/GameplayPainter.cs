@@ -1,6 +1,5 @@
 ﻿using GangWarsArcade.domain;
 using GangWarsArcade.Properties;
-using System.Drawing.Text;
 
 namespace GangWarsArcade.views;
 
@@ -13,7 +12,7 @@ public class GameplayPainter
     private readonly Bitmap grass;
     private readonly Bitmap path;
 
-    private PrivateFontCollection _fonts;
+    private FontFamily _fonts;
 
     public Size CellSize => grass.Size;
 
@@ -23,7 +22,7 @@ public class GameplayPainter
         "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080"
     }.Select(c => new SolidBrush(ColorTranslator.FromHtml(c))).ToArray();
 
-    public GameplayPainter(Map map, PrivateFontCollection fonts)
+    public GameplayPainter(Map map, FontFamily fonts)
     {
         _map = map;
         _fonts = fonts;
@@ -79,7 +78,7 @@ public class GameplayPainter
                 format.LineAlignment = StringAlignment.Near;
                 format.Alignment = StringAlignment.Center;
 
-                g.DrawString(IdentifyText(cell.Owner), new Font(_fonts.Families[0], 80), new SolidBrush(Color.FromArgb(175, color.Color.R, color.Color.G, color.Color.B)), rect, format);
+                g.DrawString(IdentifyText(cell.Owner), new Font(_fonts, 80), new SolidBrush(Color.FromArgb(175, color.Color.R, color.Color.G, color.Color.B)), rect, format);
             }
             else 
             {

@@ -1,5 +1,4 @@
 ﻿using GangWarsArcade.domain;
-using System.Drawing.Text;
 using Point = System.Drawing.Point;
 
 namespace GangWarsArcade.views;
@@ -11,7 +10,7 @@ public partial class TopbarControl : UserControl
     private readonly GameState _gameState;
     private readonly Label _timeLable;
 
-    public TopbarControl(GameState gameState, Player[] players, Point location, Size size, PrivateFontCollection font)
+    public TopbarControl(GameState gameState, Player[] players, Point location, Size size, FontFamily font)
     {
         InitializeComponent();
         SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
@@ -35,14 +34,14 @@ public partial class TopbarControl : UserControl
             Location = new Point(Size.Width / 2 - 60, Size.Height / 2 - 5),
             TextAlign = ContentAlignment.MiddleCenter,
             ForeColor = Color.White,
-            Font = new Font(font.Families[0], 24),
+            Font = new Font(font, 24),
             Size = new Size(120, 40),
             Text = TimeSpan.FromSeconds(0).ToString(@"mm\:ss")
         };
         Controls.Add(_timeLable);
     }
 
-    private void CreatePlayerBars(Player[] players, PrivateFontCollection font)
+    private void CreatePlayerBars(Player[] players, FontFamily font)
     {
         for (var i = 0; i < players.Length; i++)
         {

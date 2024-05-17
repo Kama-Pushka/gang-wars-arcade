@@ -1,6 +1,5 @@
 ﻿using GangWarsArcade.domain;
 using GangWarsArcade.Properties;
-using System.Drawing.Text;
 using Timer = System.Windows.Forms.Timer;
 using Point = System.Drawing.Point;
 
@@ -28,7 +27,7 @@ public partial class AlertControl : UserControl
     private readonly Label _trainingHighlight;
     private int _currentTrainingSlide;
 
-    public AlertControl(Point location, Size size, PrivateFontCollection fonts)
+    public AlertControl(Point location, Size size, FontFamily fonts)
     {
         InitializeComponent();
         SetStyle(ControlStyles.SupportsTransparentBackColor, true);
@@ -47,7 +46,7 @@ public partial class AlertControl : UserControl
         {
             Size = new Size(800, 300),
             ForeColor = Color.Yellow,
-            Font = new Font(fonts.Families[0], 60),
+            Font = new Font(fonts, 60),
             Location = new Point(Size.Width / 2 - 400, (Size.Height - 100) / 2 - 150),
         };
         _backgroundTitle.Hide();
@@ -66,7 +65,7 @@ public partial class AlertControl : UserControl
         _trainingImage2.Hide();
         _background.Controls.Add(_trainingImage2);
 
-        _trainingText = new Label() { ForeColor = Color.White, Font = new Font(fonts.Families[0], 20) };
+        _trainingText = new Label() { ForeColor = Color.White, Font = new Font(fonts, 20) };
         _trainingText.Hide();
         _background.Controls.Add(_trainingText);
         //

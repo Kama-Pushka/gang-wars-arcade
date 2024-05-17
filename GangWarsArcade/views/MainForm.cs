@@ -32,20 +32,20 @@ public partial class MainForm : Form
         MaximizeBox = false;
         StartPosition = FormStartPosition.CenterScreen;
 
-        _mainMenuControl = new MainMenuControl(_formSize, _fonts);
+        _mainMenuControl = new MainMenuControl(_formSize, _fonts.Families[0]);
         _mainMenuControl.StartGameButtonClicked += InitializeGameControls;
         Controls.Add(_mainMenuControl);
     }
 
     public void InitializeGameControls(Gang gang)
     {
-        var gameState = new GameState(gang, _fonts);
+        var gameState = new GameState(gang, _fonts.Families[0]);
 
         var gameFiledPosition = new Point(-32, _topbarSize.Height - 32);
         var gameFiledSize = new Size(_gameFieldSize.Width, _gameFieldSize.Height);
-        _gameFiledControl = new GameFiledControl(gameState, gameFiledPosition, gameFiledSize, _fonts);
+        _gameFiledControl = new GameFiledControl(gameState, gameFiledPosition, gameFiledSize, _fonts.Families[0]);
 
-        _topbarControl = new TopbarControl(gameState, gameState.GameMap.Players.Values.ToArray(), new Point(0, 0), _topbarSize, _fonts);
+        _topbarControl = new TopbarControl(gameState, gameState.GameMap.Players.Values.ToArray(), new Point(0, 0), _topbarSize, _fonts.Families[0]);
 
         _panel = new Panel();
         _panel.Controls.Add(_topbarControl);
@@ -56,7 +56,7 @@ public partial class MainForm : Form
 
         gameState.GameFinished += RemoveGameControls;
 
-        _gameMenuControl = new GameMenuControl(new Point(Size.Width / 2 - 100, Size.Height / 2 - 200), _fonts);
+        _gameMenuControl = new GameMenuControl(new Point(Size.Width / 2 - 100, Size.Height / 2 - 200), _fonts.Families[0]);
         _gameFiledControl.PausingGame += _gameMenuControl.ShowGameMenuControl;
         _gameMenuControl.BackToMenuCliked += gameState.FinishGame;
         _gameMenuControl.GameMenuControlShowing += _gameFiledControl.GameMenu_PauseGame;

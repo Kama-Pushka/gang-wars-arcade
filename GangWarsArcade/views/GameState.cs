@@ -1,5 +1,4 @@
 ﻿using GangWarsArcade.domain;
-using System.Drawing.Text;
 using Timer = System.Windows.Forms.Timer;
 
 namespace GangWarsArcade.views;
@@ -27,7 +26,7 @@ public class GameState
     private readonly Timer _gameTimer;
     private readonly Timer _itemsRespawnTimer;
 
-    public GameState(Gang gang, PrivateFontCollection fonts)
+    public GameState(Gang gang, FontFamily fonts)
     {
         // Initialize game map and map painter
         var map = Map.InitializeMap();

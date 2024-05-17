@@ -2,44 +2,43 @@
 
 namespace GangWarsArcade.domain;
 
- public class Item : IEntity
+public class Item : IEntity
 {
-    public ItemType ItemType;
+    private const int _maxHP = 1;
 
-    public int HP { get; private set; }
-
-    public bool IsActive { get; private set; }
-
-    public Bitmap Image { get; }
+    public ItemType ItemType { get; }
 
     public Point Position { get; }
+    public int HP { get; private set; }
+    public bool IsActive => true;
+    public Bitmap Image { get; }
 
     public Item(ItemType itemType, Point position)
     {
         ItemType = itemType;
         Position = position;
 
-        HP = 1;
-        IsActive = true;
+        HP = _maxHP;
 
         Image = IdentifyImage();
     }
 
     private Bitmap IdentifyImage()
     {
-        switch (ItemType)
+        return ItemType switch
         {
-            case ItemType.FireBolt:
-                return Resource.FireBolt;
-            case ItemType.HPRegeneration:
-                return Resource.PotionRed;
-            case ItemType.Trap:
-                return Resource.Trap;
-        }
-        return Resource.Chest;
+            ItemType.FireBolt => Resource.FireBolt,
+            ItemType.HPRegeneration => Resource.PotionRed,
+            ItemType.Trap => Resource.Trap,
+            _ => Resource.Chest,
+        };
     }
 
     public void Move(Map map)
+    {
+    }
+
+    public void Act(Map map)
     {
     }
 
@@ -48,7 +47,6 @@ namespace GangWarsArcade.domain;
         if (HP <= 0)
         {
             map.Entities.Remove(this);
-            IsActive = false;
         }
     }
 
@@ -60,13 +58,5 @@ namespace GangWarsArcade.domain;
         }
     }
 
-    private void GetHit()
-    {
-        HP--;
-    }
-
-    public void Act(Map map)
-    {
-        
-    }
+    private void GetHit() => HP--;
 }

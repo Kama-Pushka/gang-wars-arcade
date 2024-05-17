@@ -4,23 +4,21 @@ namespace GangWarsArcade.domain;
 
 public class Trap : IEntity
 {
-    public readonly Gang Owner;
+    public const int Damage = 3;
+    private const int _maxHP = 1;
+    
+    public Gang Owner { get; }
 
     public int HP { get; private set; }
-
-    public bool IsActive { get; private set; }
-
-    public Bitmap Image { get; }
-
     public Point Position { get; }
+    public bool IsActive => true;
+    public Bitmap Image { get; }
 
     public Trap(Point position, Gang owner)
     {
         Position = position;
         Owner = owner;
-
-        HP = 1;
-        IsActive = true;
+        HP = _maxHP;
 
         Image = Resource.Trap;
     }
@@ -29,31 +27,25 @@ public class Trap : IEntity
     {
     }
 
+    public void Act(Map map)
+    {
+    }
+
     public void Update(IMapWithEntity map)
     {
         if (HP <= 0)
         {
             map.Entities.Remove(this);
-            IsActive = false;
         }
     }
 
     public void CollisionWith(IEntity rival)
     {
-        if (rival is Player player)
+        if (rival is Player player && player.Gang != Owner)
         {
-            if (player.Gang != Owner)
-                GetHit();
+            GetHit();
         }
     }
 
-    private void GetHit()
-    {
-        HP--;
-    }
-
-    public void Act(Map map)
-    {
-        
-    }
+    private void GetHit() => HP--;
 }

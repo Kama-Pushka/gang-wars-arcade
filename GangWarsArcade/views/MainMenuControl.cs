@@ -11,12 +11,13 @@ public partial class MainMenuControl : UserControl
     
     private Gang _playerGang;
 
-    private PictureBox _mark;
+    private readonly PictureBox _mark;
     private readonly PointF[] _markPoint;
 
     private readonly Button startGameButton;
 
-    public MainMenuControl(Size size, PrivateFontCollection font)     {
+    public MainMenuControl(Size size, PrivateFontCollection font)
+    {
         InitializeComponent();
         Size = size;
         BackColor = Color.Black;
@@ -32,7 +33,7 @@ public partial class MainMenuControl : UserControl
 
         var title = new Label()
         {
-            Text = "Choose your race:",
+            Text = "Choose your gang:",
             ForeColor = Color.White,
             Size = new Size(400, 100),
             Location = new Point(Size.Width / 2 - 200, 25)
@@ -100,7 +101,7 @@ public partial class MainMenuControl : UserControl
         };
         var button = new Button
         {
-            BackColor = GameplayPainter.colourValues[(int)gang % GameplayPainter.colourValues.Length].Color,
+            BackColor = GameplayPainter.ColourValues[(int)gang % GameplayPainter.ColourValues.Length].Color,
             Location = new Point(((int)gang - 1) * 310 + 25, 150),
             Size = new Size(300, 502),
             Image = IdentifyImage(gang),
@@ -137,7 +138,7 @@ public partial class MainMenuControl : UserControl
         var mark = _mark.Image;
         var g = Graphics.FromImage(mark);
 
-        var triangle = new SolidBrush(GameplayPainter.colourValues[(int)button.Tag % GameplayPainter.colourValues.Length].Color);
+        var triangle = new SolidBrush(GameplayPainter.ColourValues[(int)button.Tag % GameplayPainter.ColourValues.Length].Color);
         g.FillPolygon(triangle, _markPoint);
 
         _mark.Image = mark;

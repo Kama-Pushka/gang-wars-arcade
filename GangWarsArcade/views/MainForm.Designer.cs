@@ -36,7 +36,7 @@
             //AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(782, 813);
             Name = "MainForm";
-            Text = "Form1";
+            Text = "Warcraft: Gang Wars";
             ResumeLayout(false);
         }
 

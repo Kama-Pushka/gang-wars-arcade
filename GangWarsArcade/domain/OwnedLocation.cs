@@ -2,38 +2,31 @@
 
 public class OwnedLocation
 {
-    public Gang Owner { get; set; }     public readonly Point Location;
-    public readonly int Distance;
+    public Gang Owner { get; set; }
+    public readonly Point Location;
 
-    public OwnedLocation(Gang owner, Point location, int distance)
+    public OwnedLocation(Gang owner, Point location)
     {
         Owner = owner;
         Location = location;
-        Distance = distance;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (!(obj is OwnedLocation))
-            return false;
+        if (obj == null) return false;
+        if (obj is not OwnedLocation) return false;
+
         var other = (OwnedLocation)obj;
-        return Owner.Equals(other.Owner) && Location.Equals(other.Location) && Distance.Equals(other.Distance);
+        return Owner.Equals(other.Owner) && Location.Equals(other.Location);
     }
 
     public override int GetHashCode()
     {
-        unchecked
-        {
-            var hashCode = (int)Owner;
-            hashCode = (hashCode * 397) ^ Location.GetHashCode();
-            hashCode = (hashCode * 397) ^ Distance;
-            return hashCode;
-        }
+        return HashCode.Combine(Owner, Location);
     }
-
 
     public override string ToString()
     {
-        return $"[Location: {Location}, Owner: {Owner}, Distance: {Distance}]";
+        return $"[Location: {Location}, Owner: {Owner}]";
     }
 }

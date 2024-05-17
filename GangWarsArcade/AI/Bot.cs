@@ -3,76 +3,80 @@ using Point = GangWarsArcade.domain.Point;
 
 namespace GangWarsArcade.AI;
 
-
 public class Bot
 {
-    private (Point Point, object Item) _endPoint;     private Queue<MoveDirection> _moveDirections = new();
+    private Queue<MoveDirection> _moveDirections = new();
+    private Random _rand = new Random();
 
-    private Random rand = new Random();
-
-        public MoveDirection GetMove(Map map, Player player)     {
-        
-        if (_moveDirections.Count != 0) return _moveDirections.Dequeue();         
+    public MoveDirection GetMove(Map map, Player player)
+    {
+        if (_moveDirections.Count != 0) return _moveDirections.Dequeue();
 
         var position = player.Position;
+        _moveDirections = new Queue<MoveDirection>();
 
-        _moveDirections = new Queue<MoveDirection>(); 
-                var items = map.Entities.Where(e => e is Item).Select(e => (Item)e).ToArray();
+        var items = map.Entities.Where(e => e is Item).Select(e => (Item)e).ToArray();
         if (items.Length != 0)
         {
             var guns = items.Where(e => e.ItemType == ItemType.FireBolt).Select(g => g.Position).ToArray();
             if (guns.Length != 0)
             {
-                (var endPoint, _moveDirections) = FindShortestPath(map, position, guns);
-                _endPoint = (endPoint, map.Entities.Where(e => e.Position == endPoint).First());                 return _moveDirections.Dequeue();             }
+                _moveDirections = FindShortestPath(map, position, guns);
+                return _moveDirections.Dequeue();
+            }
             else
             {
-                (var endPoint, _moveDirections) = FindShortestPath(map, position, items.Select(i => i.Position));
-                _endPoint = (endPoint, map.Entities.Where(e => e.Position == endPoint).First());                 return _moveDirections.Dequeue();             }
+                _moveDirections = FindShortestPath(map, position, items.Select(i => i.Position));
+                return _moveDirections.Dequeue();
+            }
         }
-
-                                                
         else
         {
-            var index = rand.Next(0, map.Buildings.Length);
+            var index = _rand.Next(0, map.Buildings.Length);
             var requiredPoints = map.Buildings[index].GetSurroundingRoads();
 
-            (var endPoint, _moveDirections) = FindShortestPath(map, position, [requiredPoints[0]]);             _endPoint = (endPoint, null);
+            _moveDirections = FindShortestPath(map, position, [requiredPoints[0]]);
             for (var i = 1; i < requiredPoints.Length; i++)
             {
-                _moveDirections.Enqueue(Direction.ConvertOffsetToDirection(requiredPoints[i] - requiredPoints[i - 1]));
+                _moveDirections.Enqueue(DirectionExtensions.ConvertOffsetToDirection(requiredPoints[i] - requiredPoints[i - 1]));
             }
             return _moveDirections.Dequeue();
         }
     }
 
-    public void Act(Map map, Player ai)     {
+    public void Act(Map map, Player ai)
+    {
         if (ai.Weapon == 0 && ai.Inventory == 0) return;
         
         var rivals = map.Entities.Where(e => e is Player player && player != ai && ((player.Position - ai.Position).X == 0 || (player.Position - ai.Position).Y == 0)).ToList();
         if (rivals.Count != 0)
         { 
-            var rival = rivals.First();            var offset = rival.Position - ai.Position;
+            var rival = rivals.First();
+            var offset = rival.Position - ai.Position;
 
             var x = offset.X != 0 ? offset.X / Math.Abs(offset.X) : 0;
             var y = offset.Y != 0 ? offset.Y / Math.Abs(offset.Y) : 0;
-            if (new Point(x, y) == Direction.directionToOffset[ai.Direction])             {
-                ai.Shot(map);                 ai.UseInventoryItem(map);
+            if (new Point(x, y) == DirectionExtensions.ConvertDirectionToOffset(ai.Direction))
+            {
+                ai.Shot(map);
+                ai.UseInventoryItem(map);
             }        
         }
     }
 
-    public static (Point, Queue<MoveDirection>) FindShortestPath(Map map, Point position, IEnumerable<Point> targets)
+    public static Queue<MoveDirection> FindShortestPath(Map map, Point position, IEnumerable<Point> targets)
     {
         var paths = FindPaths(map, position, targets);
         var path = paths.MinBy(p => p.Length);
-        return (path.Value, ConvertOffsetsToDirections(path.Reverse().ToList()));     }
+        return ConvertOffsetsToDirections(path.Reverse().ToList());
+    }
 
-    public static Queue<MoveDirection> ConvertOffsetsToDirections(List<Point> path)     {
+    private static Queue<MoveDirection> ConvertOffsetsToDirections(List<Point> path)
+    {
         var result = new Queue<MoveDirection>();
         for (var i = 1; i < path.Count; i++)
         {
-            result.Enqueue(Direction.ConvertOffsetToDirection(path[i] - path[i - 1]));
+            result.Enqueue(DirectionExtensions.ConvertOffsetToDirection(path[i] - path[i - 1]));
         }
         return result;
     }
@@ -88,13 +92,13 @@ public class Bot
         var queue = new Queue<Point>();
         queue.Enqueue(start);
 
-        var d = Direction.PossibleDirections;
+        var d = DirectionExtensions.PossibleDirections;
         while (queue.Count != 0)
         {
             var point = queue.Dequeue();
             var incidentPoints = d
                 .Select(p => new Point(point.X + p.X, point.Y + p.Y))
-                .Where(p => map.InBounds(p) && map.Maze[p.X, p.Y] == MapCell.Empty);
+                .Where(p => map.IsPossibleCellToMove(p));
             foreach (var nextPoints in incidentPoints)
             {
                 if (track.ContainsKey(nextPoints)) continue;

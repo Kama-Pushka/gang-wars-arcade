@@ -3,18 +3,18 @@ using GangWarsArcade.Properties;
 using Point = System.Drawing.Point;
 using Timer = System.Windows.Forms.Timer;
 
-
 namespace GangWarsArcade.views;
 
-public partial class InventoryControl : UserControl {
+public partial class InventoryControl : UserControl
+{
     private Bitmap _gunImage;
     private Bitmap _perkImage;
 
-    private Point _gunImagePosition = new Point(0, 0);
-    private Point _perkImagePosition = new Point(66, 0);
-    private Size cellSize = new Size(64, 66);
+    private Point _gunImagePosition = new(0, 0);
+    private Point _perkImagePosition = new(66, 0);
+    private Size cellSize = new(64, 66);
 
-    private Timer _gunCooldown;
+    private readonly Timer _gunCooldown;
 
     public InventoryControl(Point location)
     {
@@ -40,7 +40,8 @@ public partial class InventoryControl : UserControl {
         _gunCooldown.Interval = interval;
         _gunCooldown.Tick += TimerTick;
         _gunCooldown.Start();
-        Invalidate();     }
+        Invalidate();
+    }
 
     private void TimerTick(object sender, EventArgs e)
     {
@@ -49,7 +50,8 @@ public partial class InventoryControl : UserControl {
     }
 
     public void Update(Player player)
-    {         if (player.Weapon != 0) _gunImage = Resource.FireBolt;
+    {
+        if (player.Weapon != 0) _gunImage = Resource.FireBolt;
         else _gunImage = null;
         if (player.Inventory != 0) _perkImage = Resource.Trap;
         else _perkImage = null;
@@ -68,7 +70,8 @@ public partial class InventoryControl : UserControl {
                new Rectangle(_perkImagePosition, cellSize));
 
         if (_gunImage != null)
-            g.DrawImage(_gunImage, _gunImagePosition.X, _gunImagePosition.Y, 64, 64);         if (_perkImage != null)
+            g.DrawImage(_gunImage, _gunImagePosition.X, _gunImagePosition.Y, 64, 64);
+        if (_perkImage != null)
             g.DrawImage(_perkImage, _perkImagePosition.X, _perkImagePosition.Y, 64, 64);
 
         if (_gunCooldown.Enabled)

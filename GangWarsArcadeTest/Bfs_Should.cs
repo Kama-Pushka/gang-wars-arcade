@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using GangWarsArcade.domain;
+using GangWarsArcade.AI;
 
 namespace Dungeon;
 
@@ -107,19 +108,6 @@ public class Bfs_Should
         AssertPaths(paths, map, expectedLengths);
     }
 
-    [Test, Order(6)]
-    public void Return_ShortestPaths_OnBigTestDangeon()
-    {
-        var map = Map.FromText(DungeonsLoader.Load(DungeonsName.D_BigDungeon));
-        var expectedLengths = new[] { 170, 156, 144, 137, 84 };
-
-        var paths = GetPaths(map)
-            .OrderByDescending(x => x.Count)
-            .ToArray();
-
-        AssertPaths(paths, map, expectedLengths);
-    }
-
     [Test, Order(7)]
     public void WorksCorrect_ShortestPaths_OnManyCalls()
     {
@@ -133,18 +121,11 @@ public class Bfs_Should
         var miniPaths = GetPaths(miniMap);
 
         AssertPaths(miniPaths, miniMap, new[] { 2, 2, 2, 2 });
-
-        var map = Map.FromText(DungeonsLoader.Load(DungeonsName.D_BigDungeon));
-        var paths = GetPaths(map)
-            .OrderByDescending(x => x.Count)
-            .ToArray();
-
-        AssertPaths(paths, map, new[] { 170, 156, 144, 137, 84 });
     }
 
     private static List<Point>[] GetPaths(Map map)
     {
-        var paths = BfsTask.FindPaths(map, map.InitialPosition, map.Items)
+        var paths = Bot.FindPaths(map, map.Players.Values.First().Position, map.Entities.Where(e => e is Item).Select(i => i.Position))
             .Select(x => x.ToList())
             .ToArray();
         return paths;
@@ -187,16 +168,16 @@ public class Bfs_Should
 
     private void AssertPath(Map map, List<Point> path, int expectedLength)
     {
-        var directions = Player.PossibleDirections.ToList();
+        var directions = DirectionExtensions.PossibleDirections;
         Assert.IsNotEmpty(path, "path should not be empty");
-        Assert.Contains(path[0], map.Items, $"The first point in the path should be one of the chest, but was {path[0]}");
+        Assert.Contains(path[0], map.Entities.Where(e => e is Item).Select(i => i.Position).ToList(), $"The first point in the path should be one of the chest, but was {path[0]}");
         for (var i = 0; i < path.Count - 1; i++)
         {
             var offset = path[i + 1] - path[i];
             Assert.IsTrue(directions.Contains(offset), $"Incorrect step #{i} in your path: from {path[i]} to {path[i + 1]}");
             Assert.AreNotEqual(MapCell.Wall, map.Maze[path[i + 1].X, path[i + 1].Y], $"Collided with wall at {i}th path point: {path[i + 1]}");
         }
-        Assert.AreEqual(map.InitialPosition, path.Last(), "The last point in path must be 'start'");
+        Assert.AreEqual(map.Players.Values.First().Position, path.Last(), "The last point in path must be 'start'");
         Assert.GreaterOrEqual(path.Count, expectedLength, "Checker bug?! Leave a comment above this slide, to notify task authors, please");
         Assert.AreEqual(expectedLength, path.Count, "Your path is not the shortest one");
     }

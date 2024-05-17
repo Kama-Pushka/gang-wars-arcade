@@ -1,6 +1,6 @@
 ﻿using GangWarsArcade.domain;
 using GangWarsArcade.Properties;
-using Point = GangWarsArcade.domain.Point;
+using System.Drawing.Text;
 
 namespace GangWarsArcade.views;
 
@@ -8,39 +8,40 @@ public class GameplayPainter
 {
     public event Action InvalidateVisual;
 
-    public readonly Map CurrentMap;     
-    private Bitmap grass;
-    private Bitmap path;
-    private Bitmap peasant;
-    private Bitmap castle;
-    private Bitmap chest;
+    private readonly Map _map;
 
-    private Size CellSize => grass.Size;
+    private readonly Bitmap grass;
+    private readonly Bitmap path;
 
-    public static readonly SolidBrush[] colourValues = new[]     {
+    private PrivateFontCollection _fonts;
+
+    public Size CellSize => grass.Size;
+
+    public static readonly SolidBrush[] ColourValues = new[]
+    {
         "#FF0000", "#00FF00", "#FF00FF", "#FFFF00", "#0000FF", "#00FFFF", "#000000",
         "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080"
     }.Select(c => new SolidBrush(ColorTranslator.FromHtml(c))).ToArray();
 
-    public GameplayPainter(Map map)
+    public GameplayPainter(Map map, PrivateFontCollection fonts)
     {
-        CurrentMap = map;
-        
-                grass = Resource.Grass;
+        _map = map;
+        _fonts = fonts;
+
+        // Load resources
+        grass = Resource.Grass;
         path = Resource.Path;
-        peasant = Resource.Peasant;
-        castle = Resource.Castle;
-        chest = Resource.Chest;
     }
 
     public void ResetMap()
     {
-        CurrentMap.ResetMap();          InvalidateVisual();
+        _map.ResetMap();
+        InvalidateVisual();
     }
 
     public void Update()
     {
-        CurrentMap.Update();
+        _map.Update();
         InvalidateVisual();
     }
 
@@ -57,31 +58,56 @@ public class GameplayPainter
     private void DrawLevel(Graphics g)
     {
         RenderMap(g);
-        foreach (var building in CurrentMap.Buildings)
+        foreach (var building in _map.Buildings)
             g.DrawImage(building.Image,
                 new Rectangle(building.Location.X * CellSize.Width, building.Location.Y * CellSize.Height, CellSize.Width * 2, CellSize.Height * 2));
     }
 
     private void DrawOwnedLocations(Graphics g)
     {
-        foreach (var cell in CurrentMap.OwnedLocations.Values)
+        foreach (var cell in _map.OwnedLocations.Values)
         {
             var cellLocation = new System.Drawing.Point(cell.Location.X * CellSize.Width, cell.Location.Y * CellSize.Height);
             var rect = new Rectangle(cellLocation, grass.Size);
-            var color = colourValues[(int)cell.Owner % colourValues.Length];
+            var color = ColourValues[(int)cell.Owner % ColourValues.Length];
 
-            g.FillRectangle(new SolidBrush(Color.FromArgb(100, color.Color.R, color.Color.G, color.Color.B)),
-                rect);
+            if (_map.Maze[cell.Location.X, cell.Location.Y] == MapCell.Wall)
+            {
+                rect = new Rectangle(cellLocation, grass.Size * 2);
+
+                var format = new StringFormat();
+                format.LineAlignment = StringAlignment.Near;
+                format.Alignment = StringAlignment.Center;
+
+                g.DrawString(IdentifyText(cell.Owner), new Font(_fonts.Families[0], 80), new SolidBrush(Color.FromArgb(175, color.Color.R, color.Color.G, color.Color.B)), rect, format);
+            }
+            else 
+            {
+                g.FillRectangle(new SolidBrush(Color.FromArgb(100, color.Color.R, color.Color.G, color.Color.B)),
+                    rect);
+            }
         }
+    }
+
+    private static string IdentifyText(Gang gang)
+    {
+        return gang switch
+        {
+            Gang.Green => "[",
+            Gang.Pink => "¤",
+            Gang.Yellow => "^",
+            Gang.Blue => "]",
+            _ => "",
+        };
     }
 
     private void DrawEntity(Graphics g)
     {
-        foreach (var entity in CurrentMap.Entities.Where(e => e is not Player))
+        foreach (var entity in _map.Entities.Where(e => e is not Player))
             g.DrawImage(entity.Image,
                 new Rectangle(entity.Position.X * CellSize.Width, entity.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height));
 
-        foreach (var entity in CurrentMap.Entities.Where(e => e is Player))
+        foreach (var entity in _map.Entities.Where(e => e is Player))
         {
             g.DrawImage(entity.Image,
                 new Rectangle(entity.Position.X * CellSize.Width, entity.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height));
@@ -90,32 +116,16 @@ public class GameplayPainter
             if (player.DamageColor != null)
             {
                 g.FillRectangle(player.DamageColor, 
-                    player.Position.X * CellSize.Width, player.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height);                 player.DamageColor = null;
+                    player.Position.X * CellSize.Width, player.Position.Y * CellSize.Height, CellSize.Width, CellSize.Height);
+                player.DamageColor = null;
             }
         }
-
-                foreach (var player in CurrentMap.Players.Values.Where(p => p.IsAlive))
-        {
-
-            
-        }
-    }
-
-    private void DrawPath(Graphics g, Color color, IEnumerable<Point> path)
-    {
-        var points = path.Select(x =>
-            new PointF(x.X * CellSize.Width + CellSize.Width * 0.5f, x.Y * CellSize.Height + CellSize.Height * 0.5f)).ToArray();
-        var pen = new Pen(color, CellSize.Height * 0.125f)
-        {
-            DashPattern = [CellSize.Width * 0.075f, CellSize.Height * 0.025f]         };
-        for (var i = 0; i < points.Length - 1; i++)
-            g.DrawLine(pen, points[i], points[i + 1]);
     }
 
     private void RenderMap(Graphics g)
     {
-        var width = CurrentMap.Maze.GetLength(0);
-        var height = CurrentMap.Maze.GetLength(1);
+        var width = _map.Maze.GetLength(0);
+        var height = _map.Maze.GetLength(1);
 
         var cellWidth = grass.Size.Width;
         var cellHeight = grass.Size.Height;
@@ -124,7 +134,7 @@ public class GameplayPainter
         {
             for (var y = 0; y < height; y++)
             {
-                var image = CurrentMap.Maze[x, y] == MapCell.Wall ? grass : path;
+                var image = _map.Maze[x, y] == MapCell.Wall ? grass : path;
                 g.DrawImage(image, new Rectangle(x * cellWidth, y * cellHeight, cellWidth, cellHeight));
             }
         }

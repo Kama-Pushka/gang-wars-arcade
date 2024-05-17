@@ -35,7 +35,7 @@
             //AutoScaleDimensions = new SizeF(8F, 20F);
             //AutoScaleMode = AutoScaleMode.Font;
             Name = "AlertControl";
-            Size = new Size(250, 513);
+            //Size = new Size(250, 513);
             ResumeLayout(false);
         }
 

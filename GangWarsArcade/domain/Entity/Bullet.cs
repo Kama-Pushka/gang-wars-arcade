@@ -4,73 +4,61 @@ namespace GangWarsArcade.domain;
 
 public class Bullet : IEntity
 {
-    public MoveDirection Direction { get; }     public Point Position { get; set; }     public Gang Owner { get; }
+    public const int Damage = 2;
+    private const int _maxHP = 1;
 
-    public bool IsActive { get; private set; }
+    public MoveDirection Direction { get; }
+    public Gang Owner { get; }
 
-    public Bitmap Image { get; }
-
+    public Point Position { get; private set; }
     public int HP { get; private set; }
+    public bool IsActive => true;
+    public Bitmap Image { get; }
 
     public Bullet(MoveDirection direction, Point position, Gang owner)
     {
         Direction = direction;
         Position = position;
         Owner = owner;
-        IsActive = true;
-        HP = 1; 
+        HP = _maxHP;
+
         Image = Resource.FireBolt;
     }
 
-    public void Move(Map map)
+    public void Move(Map map) 
     {
-        WalkInDirection(map);
+        if (Direction == 0) throw new ArgumentException("Bullet Direction is null.");
+
+        var newPoint = Position + DirectionExtensions.ConvertDirectionToOffset(Direction);
+        if (map.IsPossibleCellToMove(newPoint))
+        {
+            Position = newPoint;
+        }
+        else
+        {
+            GetHit();
+        }
     }
 
-    public void Update(IMapWithEntity map)     {
-        if (HP <= 0)         {
-            map.Entities.Remove(this);
-            IsActive = false;
-        }
+    public void Act(Map map)
+    {
+    }
 
+    public void Update(IMapWithEntity map)
+    {
+        if (HP <= 0)
+        {
+            map.Entities.Remove(this);
+        }
     }
 
     public void CollisionWith(IEntity rival)
     {
-        if (rival is Player player)
+        if (rival is Player player && player.Gang != Owner)
         {
-            if (player.Gang != Owner)
-                GetHit();         }
-    }
-
-    private void WalkInDirection(Map map)     {
-        if (Direction != 0)
-        {
-            var newPoint = Position + directionToOffset[Direction];
-            if (map.InBounds(newPoint) && map.Maze[newPoint.X, newPoint.Y] != MapCell.Wall)             {
-                Position = newPoint;
-            }
-            else 
-            {
-                map.Entities.Remove(this);                 IsActive = false;
-            }
+            GetHit();
         }
     }
 
-    private void GetHit()
-    {
-        HP--;
-            }
-
-    public void Act(Map map)
-    {
-        
-    }
-
-    private static readonly Dictionary<MoveDirection, Point> directionToOffset = new()     {
-        { MoveDirection.Up, new Point(0, -1) },
-        { MoveDirection.Down, new Point(0, 1) },
-        { MoveDirection.Left, new Point(-1, 0) },
-        { MoveDirection.Right, new Point(1, 0) }
-    };
+    private void GetHit() => HP--;
 }

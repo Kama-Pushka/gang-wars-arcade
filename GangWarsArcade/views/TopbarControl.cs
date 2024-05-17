@@ -11,23 +11,26 @@ public partial class TopbarControl : UserControl
     private readonly GameState _gameState;
     private readonly Label _timeLable;
 
-    public TopbarControl(GameState gameState, Player[] players, Point location, Size size, PrivateFontCollection font)     {
+    public TopbarControl(GameState gameState, Player[] players, Point location, Size size, PrivateFontCollection font)
+    {
         InitializeComponent();
-                BackColor = Color.DimGray;
-        
+        SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+        BackColor = Color.DimGray;
         Location = location;
         Size = size;
 
-        _roundWinnersBarPosition = new Point(size.Width / 2 - 69, 20);
-
         _gameState = gameState;
-        _gameState.InvalidateTopbarVisual += Update;
+        _gameState.InvalidateTopbarVisual += UpdateTopbarControl;
 
-                Paint += DrawRoundWinners;
+        // Initialize Round winners bar
+        _roundWinnersBarPosition = new Point(size.Width / 2 - 69, 20);
+        Paint += DrawRoundWinners;
 
-                CreatePlayerBars(players, font);
+        // Initialize Player bars
+        CreatePlayerBars(players, font);
 
-                _timeLable = new Label
+        // Initialize game timer
+        _timeLable = new Label
         {
             Location = new Point(Size.Width / 2 - 60, Size.Height / 2 - 5),
             TextAlign = ContentAlignment.MiddleCenter,
@@ -39,7 +42,8 @@ public partial class TopbarControl : UserControl
         Controls.Add(_timeLable);
     }
 
-    private void CreatePlayerBars(Player[] players, PrivateFontCollection font)     {
+    private void CreatePlayerBars(Player[] players, PrivateFontCollection font)
+    {
         for (var i = 0; i < players.Length; i++)
         {
             var player = players[i];
@@ -49,25 +53,30 @@ public partial class TopbarControl : UserControl
             var bar = new PlayerBarControl(player, font) { Location = new Point(i * 230 + offset, 15) };
             Controls.Add(bar);
 
-            player.PlayerUpdated += bar.UpdatePlayerBar;
+            player.Updated += bar.PlayerBarUpdate;
         }
     }
 
-    public void Update()
+    public void UpdateTopbarControl()
     {
-        _timeLable.Text = TimeSpan.FromSeconds(_gameState.TimeLeft).ToString(@"mm\:ss");             Invalidate();       }
+        _timeLable.Text = TimeSpan.FromSeconds(_gameState.TimeLeft).ToString(@"mm\:ss");
+        Invalidate();
+    }
 
-        private void DrawRoundWinners(object sender, PaintEventArgs e)     {
+    private void DrawRoundWinners(object? _, PaintEventArgs e)
+    {
         var g = e.Graphics;
 
         var rounds = _gameState.RoundsWinners;
-        for (var i = 0; i < rounds.Length; i++)          {
+        for (var i = 0; i < rounds.Length; i++)
+        {
             var rect = new RectangleF(_roundWinnersBarPosition.X + i * 30f, _roundWinnersBarPosition.Y, 15, 15);
             var shadow = new RectangleF(_roundWinnersBarPosition.X + i * 30f + 2, _roundWinnersBarPosition.Y + 2, 15, 15);
             g.DrawEllipse(new Pen (new SolidBrush(Color.FromKnownColor(KnownColor.Black))), shadow);
             g.FillEllipse(new SolidBrush(Color.FromKnownColor(KnownColor.Black)), shadow);
-            if (rounds[i] != 0)             {
-                var color = GameplayPainter.colourValues[(int)rounds[i] % GameplayPainter.colourValues.Length];
+            if (rounds[i] != 0)
+            {
+                var color = GameplayPainter.ColourValues[(int)rounds[i] % GameplayPainter.ColourValues.Length];
                 g.DrawEllipse(new Pen(color), rect);
                 g.FillEllipse(color, rect);
             }

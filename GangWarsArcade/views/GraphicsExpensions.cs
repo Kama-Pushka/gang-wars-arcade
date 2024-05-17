@@ -4,7 +4,8 @@ using System.Drawing.Drawing2D;
 
 namespace GangWarsArcade.views;
 
- 
+ //from http:switchonthecode.comtutorialscsharp-creating-rounded-rectangles-using-a-graphics-path
+
 public abstract class RoundedRectangle
 {
     public enum RectangleCorners
@@ -29,7 +30,8 @@ public abstract class RoundedRectangle
         GraphicsPath p = new GraphicsPath();
         p.StartFigure();
 
-                if ((RectangleCorners.TopLeft & corners) == RectangleCorners.TopLeft)
+        //Top Left Corner
+        if ((RectangleCorners.TopLeft & corners) == RectangleCorners.TopLeft)
         {
             p.AddArc(x, y, r2, r2, 180, 90);
         }
@@ -39,9 +41,11 @@ public abstract class RoundedRectangle
             p.AddLine(x, y, xr, y);
         }
 
-                p.AddLine(xr, y, xwr, y);
+        //Top Edge
+        p.AddLine(xr, y, xwr, y);
 
-                if ((RectangleCorners.TopRight & corners) == RectangleCorners.TopRight)
+        //Top Right Corner
+        if ((RectangleCorners.TopRight & corners) == RectangleCorners.TopRight)
         {
             p.AddArc(xwr2, y, r2, r2, 270, 90);
         }
@@ -51,9 +55,11 @@ public abstract class RoundedRectangle
             p.AddLine(xw, y, xw, yr);
         }
 
-                p.AddLine(xw, yr, xw, yhr);
+        //Right Edge
+        p.AddLine(xw, yr, xw, yhr);
 
-                if ((RectangleCorners.BottomRight & corners) == RectangleCorners.BottomRight)
+        //Bottom Right Corner
+        if ((RectangleCorners.BottomRight & corners) == RectangleCorners.BottomRight)
         {
             p.AddArc(xwr2, yhr2, r2, r2, 0, 90);
         }
@@ -63,9 +69,11 @@ public abstract class RoundedRectangle
             p.AddLine(xw, yh, xwr, yh);
         }
 
-                p.AddLine(xwr, yh, xr, yh);
+        //Bottom Edge
+        p.AddLine(xwr, yh, xr, yh);
 
-                if ((RectangleCorners.BottomLeft & corners) == RectangleCorners.BottomLeft)
+        //Bottom Left Corner
+        if ((RectangleCorners.BottomLeft & corners) == RectangleCorners.BottomLeft)
         {
             p.AddArc(x, yhr2, r2, r2, 90, 90);
         }
@@ -75,7 +83,8 @@ public abstract class RoundedRectangle
             p.AddLine(x, yh, x, yhr);
         }
 
-                p.AddLine(x, yhr, x, yr);
+        //Left Edge
+        p.AddLine(x, yhr, x, yr);
 
         p.CloseFigure();
         return p;
@@ -95,55 +104,4 @@ public abstract class RoundedRectangle
 
     public static GraphicsPath Create(Rectangle rect)
     { return Create(rect.X, rect.Y, rect.Width, rect.Height); }
-}
-
- 
-public static class GraphicsExpensions
-{
-    public static void DrawRoundedRectangle(this Graphics graphics, Pen pen, Rectangle bounds, int cornerRadius)
-    {
-        ArgumentNullException.ThrowIfNull(graphics);
-        ArgumentNullException.ThrowIfNull(pen);
-        using (GraphicsPath path = RoundedRect(bounds, cornerRadius))
-        {
-            graphics.DrawPath(pen, path);
-        }
-    }
-    public static void FillRoundedRectangle(this Graphics graphics, Brush brush, Rectangle bounds, int cornerRadius)
-    {
-        ArgumentNullException.ThrowIfNull(graphics);
-        ArgumentNullException.ThrowIfNull(brush);
-        using (GraphicsPath path = RoundedRect(bounds, cornerRadius))
-        {
-            graphics.FillPath(brush, path);
-        }
-    }
-
-    public static GraphicsPath RoundedRect(Rectangle bounds, int radius)
-    {
-        int diameter = radius * 2;
-        Size size = new Size(diameter, diameter);
-        Rectangle arc = new Rectangle(bounds.Location, size);
-        GraphicsPath path = new GraphicsPath();
-
-        if (radius == 0)
-        {
-            path.AddRectangle(bounds);
-            return path;
-        }
-
-                path.AddArc(arc, 180, 90);
-
-                arc.X = bounds.Right - diameter;
-        path.AddArc(arc, 270, 90);
-
-                arc.Y = bounds.Bottom - diameter;
-        path.AddArc(arc, 0, 90);
-
-                arc.X = bounds.Left;
-        path.AddArc(arc, 90, 90);
-
-        path.CloseFigure();
-        return path;
-    }
 }

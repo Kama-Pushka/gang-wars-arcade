@@ -12,7 +12,13 @@ public class Trap : IEntity
     public int HP { get; private set; }
     public Point Position { get; }
     public bool IsActive => true;
-    public Bitmap Image { get; }
+    public Bitmap Image { get; set; }
+
+    public MoveDirection Direction => 0;
+
+    public Bitmap[,] Sprites => null;
+
+    public int Speed => 0;
 
     public Trap(Point position, Gang owner)
     {
@@ -23,8 +29,13 @@ public class Trap : IEntity
         Image = Resource.Trap;
     }
 
-    public void Move(Map map)
+    public void Move(Map map, Point newPosition)
     {
+    }
+
+    public Point GetNextPoint(Map map)
+    {
+        return Position;
     }
 
     public void Act(Map map)
@@ -35,7 +46,7 @@ public class Trap : IEntity
     {
         if (HP <= 0)
         {
-            map.Entities.Remove(this);
+            map.RemoveEntity(this);
         }
     }
 

@@ -83,6 +83,16 @@ namespace GangWarsArcade.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Cross_Road {
+            get {
+                object obj = ResourceManager.GetObject("Cross_Road", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap e {
             get {
                 object obj = ResourceManager.GetObject("e", resourceCulture);
@@ -103,6 +113,16 @@ namespace GangWarsArcade.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ElfSprites {
+            get {
+                object obj = ResourceManager.GetObject("ElfSprites", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Elven_Lumber_Mill {
             get {
                 object obj = ResourceManager.GetObject("Elven_Lumber_Mill", resourceCulture);
@@ -116,6 +136,16 @@ namespace GangWarsArcade.Properties {
         internal static System.Drawing.Bitmap FireBolt {
             get {
                 object obj = ResourceManager.GetObject("FireBolt", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FireboltSprites {
+            get {
+                object obj = ResourceManager.GetObject("FireboltSprites", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,9 +233,9 @@ namespace GangWarsArcade.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Peasant {
+        internal static System.Drawing.Bitmap peasant_thumb {
             get {
-                object obj = ResourceManager.GetObject("Peasant", resourceCulture);
+                object obj = ResourceManager.GetObject("peasant_thumb", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -213,9 +243,29 @@ namespace GangWarsArcade.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Peon {
+        internal static System.Drawing.Bitmap PeasantSprites {
             get {
-                object obj = ResourceManager.GetObject("Peon", resourceCulture);
+                object obj = ResourceManager.GetObject("PeasantSprites", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap peon_thumb {
+            get {
+                object obj = ResourceManager.GetObject("peon_thumb", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PeonSprites {
+            get {
+                object obj = ResourceManager.GetObject("PeonSprites", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -233,9 +283,19 @@ namespace GangWarsArcade.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Priest {
+        internal static System.Drawing.Bitmap priest_thumb {
             get {
-                object obj = ResourceManager.GetObject("Priest", resourceCulture);
+                object obj = ResourceManager.GetObject("priest_thumb", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Semi_Cross_Road {
+            get {
+                object obj = ResourceManager.GetObject("Semi_Cross_Road", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -253,9 +313,29 @@ namespace GangWarsArcade.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap SkeletonWarrior {
+        internal static System.Drawing.Bitmap SkeletonSprites {
             get {
-                object obj = ResourceManager.GetObject("SkeletonWarrior", resourceCulture);
+                object obj = ResourceManager.GetObject("SkeletonSprites", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap skeletonWarrior_thumb {
+            get {
+                object obj = ResourceManager.GetObject("skeletonWarrior_thumb", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Straight_Road {
+            get {
+                object obj = ResourceManager.GetObject("Straight_Road", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -296,6 +376,16 @@ namespace GangWarsArcade.Properties {
         internal static System.Drawing.Bitmap wasd {
             get {
                 object obj = ResourceManager.GetObject("wasd", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Сorner_Road {
+            get {
+                object obj = ResourceManager.GetObject("Сorner_Road", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

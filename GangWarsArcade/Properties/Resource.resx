@@ -124,17 +124,26 @@
   <data name="Chest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\Chest.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Cross_Road" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\Cross Road.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="e" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\e.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Elf" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\elf.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ElfSprites" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\sprites\elf.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Elven_Lumber_Mill" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\buildings\Elven Lumber Mill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="FireBolt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\FireBolt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FireboltSprites" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\sprites\firebolt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Grass" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\Grass.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -160,23 +169,38 @@
   <data name="Path" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\Path.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Peasant" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="PeasantSprites" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\sprites\peasant.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="peasant_thumb" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\Peasant.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Peon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="PeonSprites" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\sprites\peon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="peon_thumb" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\Peon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PotionRed" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\PotionRed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Priest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="priest_thumb" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\Priest.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Skeleton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resourses\test.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Semi_Cross_Road" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\Semi Cross Road.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="SkeletonWarrior" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Skeleton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\skeleton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SkeletonSprites" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\sprites\skeleton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skeletonWarrior_thumb" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\SkeletonWarrior.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Straight_Road" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\Straight Road.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Town_Hall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\buildings\Town Hall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -189,5 +213,8 @@
   </data>
   <data name="wasd" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resourses\wasd.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Сorner_Road" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resourses\Сorner Road.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

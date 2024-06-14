@@ -1,4 +1,5 @@
 ﻿using GangWarsArcade.domain;
+using Point = System.Drawing.Point;
 using Timer = System.Windows.Forms.Timer;
 
 namespace GangWarsArcade.views;
@@ -30,14 +31,17 @@ public class GameState
     {
         // Initialize game map and map painter
         var map = Map.InitializeMap();
-        map.ResetMap();
-        map.SetAI(gang);
-
         GameMap = map;
+
         GameplayPainter = new GameplayPainter(map, fonts);
 
+        map.EntityAdded += BeginAct;
+        map.EntityRemoved += RemoveAnimation;
+        map.ResetMap(); // start setting
+        map.SetAI(gang);
+
         // Initialize map painter timer
-        _mapUpdateTimer = new Timer { Interval = 180 };
+        _mapUpdateTimer = new Timer { Interval = 45 };
         _mapUpdateTimer.Tick += UpdateGamePainter;
 
         // Initialize game timer
@@ -53,8 +57,148 @@ public class GameState
         _itemsRespawnTimer.Start();
     }
 
+    public static readonly Dictionary<MoveDirection, int> sequenceNumber = new()
+    {
+        { MoveDirection.Up, 0 },
+        { MoveDirection.Down, 1 },
+        { MoveDirection.Left, 2 },
+        { MoveDirection.Right, 3 },
+    };
+
     private void UpdateGamePainter(object? _, EventArgs __)
-        => GameplayPainter.Update();
+    {
+        foreach (var e in GameplayPainter.Animations.ToList())
+        {
+            if (e.Direction != e.Entity.Direction)
+            {
+                BeginAct(e.Entity, e);
+                continue;
+            }
+            if (e.TargetLogicalLocation != e.Entity.Position)
+            {
+                e.Location = new Point(e.Location.X + e.Entity.Speed * DirectionExtensions.ConvertDirectionToOffset(e.Direction).X,
+                    e.Location.Y + e.Entity.Speed * DirectionExtensions.ConvertDirectionToOffset(e.Direction).Y);
+                e.SlowDownFrameRate++;
+                if (e.SlowDownFrameRate == e.MaxSlowDownFrameRate)
+                {
+                    e.CurrentSprite++;
+                    if (e.CurrentSprite == e.SpritesCount) e.CurrentSprite = 0;
+                    e.SlowDownFrameRate = 0;
+                }
+            }
+
+            e.CurrentAnimationTime++;
+            if (e.Entity.Sprites != null)
+                if (e.Entity.IsActive) e.Entity.Image = e.Entity.Sprites[sequenceNumber[e.Direction], e.CurrentSprite];
+                else
+                {
+                    e.CurrentSprite++;
+                    if (e.CurrentSprite == e.SpritesCount) e.CurrentSprite = 0;
+                    e.Entity.Image = e.Entity.Sprites[4, e.CurrentSprite];
+                }
+
+            if (e.CurrentAnimationTime == e.AnimationTime && !e.Entity.IsActive)
+                GameplayPainter.Animations.Remove(e);
+            else if (e.CurrentAnimationTime == e.AnimationTime || (e.CurrentAnimationTime > e.AnimationTime && e.Entity is Player player && !player.IsHumanPlayer))
+            {
+                e.Entity.Move(GameMap, e.TargetLogicalLocation);
+                e.Entity.Update(GameMap);
+                e.Entity.Act(GameMap);
+                BeginAct(e.Entity);
+                // TODO обновлять карту здесь
+            }
+            else if (e.Entity.IsActive) e.Entity.Update(GameMap);
+        }
+        GameplayPainter.Update();
+    }
+
+    private void RemoveAnimation(IEntity entity)
+    {
+        foreach (var a in GameplayPainter.Animations.Where(a => a.Entity == entity).ToList())
+            GameplayPainter.Animations.Remove(a);
+    }
+
+    public class EntityAnimation
+    {
+        public int AnimationTime;
+        public int CurrentAnimationTime;
+        public int CurrentSprite;
+        public int SlowDownFrameRate;
+        public int MaxSlowDownFrameRate;
+        public int SpritesCount;
+        public IEntity Entity;
+        public MoveDirection Direction;
+        public Point Location;
+        public domain.Point TargetLogicalLocation;
+        public bool IsOneReplayAntimation;
+    }
+
+    public void BeginAct(IEntity entity, EntityAnimation prevAnimation = null)
+    {
+        RemoveAnimation(entity);
+        if (entity.IsActive)
+        {
+            var location = new Point(entity.Position.X * GameplayPainter.CellSize.Width, entity.Position.Y * GameplayPainter.CellSize.Height);
+            if (prevAnimation != null) location = prevAnimation.Location;
+
+            var targetPoint = entity.GetNextPoint(GameMap);
+
+            var distance = Math.Abs(targetPoint.X * GameplayPainter.CellSize.Width - location.X);
+            if (entity.Direction == MoveDirection.Up || entity.Direction == MoveDirection.Down)
+                distance = Math.Abs(targetPoint.Y * GameplayPainter.CellSize.Width - location.Y);
+
+            if (distance > 0)
+            {
+                if (entity.Direction == MoveDirection.Up || entity.Direction == MoveDirection.Down)
+                    location = new Point(entity.Position.X * GameplayPainter.CellSize.Width, location.Y);
+                else
+                    location = new Point(location.X, entity.Position.Y * GameplayPainter.CellSize.Height);
+            }
+
+            GameplayPainter.Animations.Add(
+                new EntityAnimation
+                {
+                    AnimationTime = entity.Speed != 0 ? distance / entity.Speed : 0,
+                    Entity = entity,
+                    Direction = entity.Direction,
+                    Location = location,
+                    TargetLogicalLocation = targetPoint,
+                    MaxSlowDownFrameRate = IdentifySlowDown(entity),
+                    SpritesCount = entity.Sprites != null ? entity.Sprites.GetLength(1) : default
+                });
+        }
+        else if (entity is Bullet)
+        {
+            var location = new Point(entity.Position.X * GameplayPainter.CellSize.Width, entity.Position.Y * GameplayPainter.CellSize.Height);
+            if (prevAnimation != null) location = prevAnimation.Location;
+
+            GameplayPainter.Animations.Add(
+                new EntityAnimation
+                {
+                    AnimationTime = 4,
+                    Entity = entity,
+                    Direction = entity.Direction,
+                    Location = location,
+                    TargetLogicalLocation = entity.Position,
+                    MaxSlowDownFrameRate = IdentifySlowDown(entity),
+                    SpritesCount = entity.Sprites != null ? entity.Sprites.GetLength(1) : default,
+                    IsOneReplayAntimation = entity is Bullet
+                });
+        }
+    }
+
+    private static int IdentifySlowDown(IEntity entity)
+    {
+        if (entity is Player player)
+            return player.Gang switch
+            {
+                Gang.Green => 2,
+                Gang.Blue => 2,
+                Gang.Yellow => 3,
+                Gang.Pink => 3
+            };
+        else return 1;
+    }
 
     private void ItemsRespawn(object? _, EventArgs __)
         => GameMap.AddItemsToRandomCell([ItemType.FireBolt, ItemType.HPRegeneration, ItemType.HPRegeneration, ItemType.Trap]);

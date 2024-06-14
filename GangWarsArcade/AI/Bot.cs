@@ -15,7 +15,7 @@ public class Bot
         var position = player.Position;
         _moveDirections = new Queue<MoveDirection>();
 
-        var items = map.Entities.Where(e => e is Item).Select(e => (Item)e).ToArray();
+        var items = map.Entities.Where(e => e is Item && e.Position != position).Select(e => (Item)e).ToArray();
         if (items.Length != 0)
         {
             var guns = items.Where(e => e.ItemType == ItemType.FireBolt).Select(g => g.Position).ToArray();

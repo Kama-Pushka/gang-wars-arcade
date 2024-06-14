@@ -10,6 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="resourses\sprites\elf\**" />
+    <Compile Remove="resourses\sprites\peasant\**" />
+    <Compile Remove="resourses\sprites\skeleton\**" />
+    <EmbeddedResource Remove="resourses\sprites\elf\**" />
+    <EmbeddedResource Remove="resourses\sprites\peasant\**" />
+    <EmbeddedResource Remove="resourses\sprites\skeleton\**" />
+    <None Remove="resourses\sprites\elf\**" />
+    <None Remove="resourses\sprites\peasant\**" />
+    <None Remove="resourses\sprites\skeleton\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="resourses\Castle.ico" />
   </ItemGroup>
 

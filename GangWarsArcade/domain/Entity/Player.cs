@@ -1,5 +1,6 @@
 ﻿using GangWarsArcade.AI;
 using GangWarsArcade.Properties;
+using System.Reflection;
 using Timer = System.Timers.Timer;
 
 namespace GangWarsArcade.domain;
@@ -13,6 +14,8 @@ public class Player : IEntity
 
     public event Action<Player> HumanPlayerWasted;
     public event Action<int> HumanPlayerShoted; 
+
+    public Bitmap[,] Sprites { get; }
 
     public Gang Gang { get; }
     public ItemType Weapon { get; private set; }
@@ -28,7 +31,9 @@ public class Player : IEntity
     public Point Position { get; private set; }
     public int HP { get; private set; }
     public bool IsActive => OwnedBuildingsCount != 0 || IsAlive;
-    public Bitmap Image { get; private set; }
+    public Bitmap Image { get; set; }
+
+    public int Speed => 8;
 
     public Player(Point position, Gang gang)
     {
@@ -46,18 +51,35 @@ public class Player : IEntity
         shotCooldown = new() { Interval = 1000 };
         shotCooldown.Elapsed += (_, __) => shotCooldown.Stop();
 
-        Image = IdentifyImage();
+        Sprites = new Bitmap[4,5];
+        var scrImage = (Bitmap)typeof(Resource).GetProperty(IdentifySprites() + "Sprites", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+        var destRegion = new Rectangle(0, 0, 64, 64);
+        for (var i = 0; i < Sprites.GetLength(0); i++) // walking sprites
+            for (var j = 0; j < Sprites.GetLength(1); j++)
+            {
+                var scrRegion = new Rectangle(j * 64, i * 64, 64, 64);
+                Sprites[i, j] = new Bitmap(64, 64);
+                CopyRegionIntoImage(scrImage, scrRegion, Sprites[i, j], destRegion);
+            }
+        Image = Sprites[0, 0];
     }
 
-    private Bitmap IdentifyImage()
+    public static void CopyRegionIntoImage(Bitmap srcBitmap, Rectangle srcRegion, Bitmap destBitmap, Rectangle destRegion)
+    {
+        using (Graphics grD = Graphics.FromImage(destBitmap))
+        {
+            grD.DrawImage(srcBitmap, destRegion, srcRegion, GraphicsUnit.Pixel);
+        }
+    }
+
+    private string IdentifySprites()
     {
         return Gang switch
         {
-            Gang.Green => Resource.Peon,
-            Gang.Blue => Resource.Peasant,
-            Gang.Yellow => Resource.SkeletonWarrior,
-            Gang.Pink => Resource.Priest,
-            _ => Resource.Peasant,
+            Gang.Green => "Peon",
+            Gang.Blue => "Peasant",
+            Gang.Yellow => "Skeleton",
+            Gang.Pink => "Elf"
         };
     }
 
@@ -75,11 +97,17 @@ public class Player : IEntity
     }
 
     #region Move
-    public void Move(Map map)
+    public void Move(Map map, Point newPoint)
     {
-        if (!IsHumanPlayer) SetNewDirection(AI.GetMove(map, this));
-
-        WalkInDirection(map);
+        Position = newPoint;
+        if (map.OwnedLocations.TryGetValue(newPoint, out OwnedLocation? value))
+        {
+            value.Owner = Gang;
+        }
+        else
+        {
+            map.OwnedLocations[newPoint] = new OwnedLocation(Gang, newPoint);
+        }
     }
 
     public void SetNewDirection(MoveDirection direction)
@@ -87,46 +115,21 @@ public class Player : IEntity
         if (direction == Direction) return;
 
         Direction = direction;
-        var image = IdentifyImage();
-        switch (direction)
-        {
-            case MoveDirection.Up:
-                image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                break;
-            case MoveDirection.Down:
-                image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                break;
-            case MoveDirection.Right:
-                break;
-            case MoveDirection.Left:
-                image.RotateFlip(RotateFlipType.Rotate180FlipY);
-                break;
-        }
-        Image = image;
     }
 
-    private void WalkInDirection(Map map)
+    public Point GetNextPoint(Map map)
     {
-        if (Direction == 0) return;
+        if (Direction == 0) return new Point();
 
         var newPoint = Position + DirectionExtensions.ConvertDirectionToOffset(Direction);
-        if (map.IsPossibleCellToMove(newPoint))
-        {
-            Position = newPoint;
-            if (map.OwnedLocations.TryGetValue(newPoint, out OwnedLocation? value))
-            {
-                value.Owner = Gang;
-            }
-            else
-            {
-                map.OwnedLocations[newPoint] = new OwnedLocation(Gang, newPoint);
-            }
-        }
+        if (map.IsPossibleCellToMove(newPoint)) return newPoint;
+        return Position;
     }
     #endregion
 
     public void Act(Map map)
     {
+        if (!IsHumanPlayer) SetNewDirection(AI.GetMove(map, this));
         if (!IsHumanPlayer) AI.Act(map, this);
     }
 
@@ -175,7 +178,6 @@ public class Player : IEntity
                 HP -= Trap.Damage;
                 break;
         }
-        DamageColor = new SolidBrush(Color.Red);
     }
 
     #region Wasted and Respawn
@@ -184,10 +186,9 @@ public class Player : IEntity
         IsAlive = false;
         Weapon = 0;
         Inventory = 0;
-        DamageColor = null;
         if (IsActive) respawnTimer.Start();
 
-        map.Entities.Remove(this);
+        map.RemoveEntity(this);
 
         if (IsHumanPlayer) HumanPlayerWasted(this);
     }
@@ -231,7 +232,7 @@ public class Player : IEntity
         switch (Inventory)
         {
             case ItemType.Trap:
-                map.Entities.Add(new Trap(Position, Gang));
+                map.AddEntity(new Trap(Position, Gang));
                 break;
         }
         Inventory = 0;
@@ -250,8 +251,8 @@ public class Player : IEntity
         if (Direction != 0 && Weapon != 0)
         {
             var bullet = new Bullet(Direction, Position, Gang);
-            bullet.Move(map);
-            map.Entities.Add(bullet); 
+            //bullet.Move(map);
+            map.AddEntity(bullet); 
             shotCooldown.Start();
         }
 

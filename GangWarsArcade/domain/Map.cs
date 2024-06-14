@@ -1,7 +1,13 @@
-﻿namespace GangWarsArcade.domain;
+﻿using GangWarsArcade.Properties;
+using static GangWarsArcade.views.GameState;
+
+namespace GangWarsArcade.domain;
 
 public class Map : IMapWithEntity
 {
+    public event Action<IEntity, EntityAnimation> EntityAdded;
+    public event Action<IEntity> EntityRemoved;
+
     public MapCell[,] Maze { get; private set; }
 
     public Dictionary<Gang, Player> Players { get; private set; }
@@ -10,11 +16,25 @@ public class Map : IMapWithEntity
     public Building[] Buildings { get; private set; }
 
     public HashSet<IEntity> Entities { get; private set; }
-    public void AddEntity(IEntity entity) => Entities.Add(entity);
+    public void AddEntity(IEntity entity) 
+    {
+        Entities.Add(entity);
+        EntityAdded(entity, null);
+    }
+    public void RemoveEntity(IEntity entity)
+    {
+        Entities.Remove(entity);
+        EntityRemoved(entity);
+
+        if (entity is Bullet)
+            EntityAdded(entity, null);
+    }
 
     private Map(MapCell[,] maze, Building[] buildings, HashSet<IEntity> entities, Dictionary<Gang, Player> players)
     {
         Maze = maze;
+        IdentifyRoadImages(maze);
+
         Buildings = buildings;
         Players = players;
         OwnedLocations = new Dictionary<Point, OwnedLocation>();
@@ -29,7 +49,7 @@ public class Map : IMapWithEntity
         var height = Maze.GetLength(1);
         for (var i = 0; i < width; i++)
         for (var j = 0; j < height; j++)
-            if (Maze[i, j] == MapCell.Empty) emptyPoints.Add(new Point(i, j));
+            if (Maze[i, j].Cell == MapCellEnum.Empty) emptyPoints.Add(new Point(i, j));
         _emptyPoints = emptyPoints.ToArray();
     }
 
@@ -42,12 +62,6 @@ public class Map : IMapWithEntity
 
     public void Update()
     {
-        foreach (var entity in Entities.OrderByDescending(e => e is Player))
-        {
-            entity.Move(this);
-            entity.Act(this);
-            entity.Update(this);
-        }
         foreach (var building in Buildings)
         {
             building.Update(this);
@@ -61,24 +75,25 @@ public class Map : IMapWithEntity
     {
         _rand.Shuffle(_emptyPoints);
         for (var i = 0; i < items.Length; i++)
-            Entities.Add(new Item(items[i], _emptyPoints[i]));
+            AddEntity(new Item(items[i], _emptyPoints[i]));
     }
 
     public void ResetMap()
     {
         Entities.Clear();
-        foreach (var player in Players.Values) 
-            Entities.Add(player);
 
         foreach (var building in Buildings)
             building.Image = Building.IdentifyImage();
 
         OwnedLocations = new Dictionary<Point, OwnedLocation>();
         GenerateStartMap();
+
+        foreach (var player in Players.Values) 
+            AddEntity(player);
     }
 
     public bool IsPossibleCellToMove(Point point)
-        => InBounds(point) && Maze[point.X, point.Y] == MapCell.Empty;
+        => InBounds(point) && Maze[point.X, point.Y].Cell == MapCellEnum.Empty;
 
     public bool InBounds(Point point)
         => point is { X: >= 0, Y: >= 0 }
@@ -102,6 +117,7 @@ public class Map : IMapWithEntity
             }
             Players[(Gang)i + 1].Reset(_startHomeLocations[i].PlayerPosition);
             Players[(Gang)i + 1].SetNewDirection(_startHomeLocations[i].StartDirection);
+            Players[(Gang)i + 1].Image = Players[(Gang)i + 1].Sprites[sequenceNumber[Players[(Gang)i + 1].Direction], 0];
         }
     }
 
@@ -186,31 +202,94 @@ public class Map : IMapWithEntity
                 switch (lines[y][x])
                 {
                     case '#':
-                        map[x, y] = MapCell.Wall;
+                        map[x, y] = new MapCell() { Image = Resource.Grass, Cell = MapCellEnum.Wall };
                         break;
                     case 'P':
-                        map[x, y] = MapCell.Empty;
+                        map[x, y] = new MapCell() { Image = Resource.Path, Cell = MapCellEnum.Empty };
                         var player = new Player(new Point(x, y), ++gang);
                         entities.Add(player);
                         players[gang] = player;
                         break;
                     case 'C': // для тестов
-                        map[x, y] = MapCell.Empty;
+                        map[x, y] = new MapCell() { Image = Resource.Path, Cell = MapCellEnum.Empty };
                         var chest = new Item((ItemType)_rand.Next(3), new Point(x, y));
                         entities.Add(chest);
                         break;
                     case 'E':
-                        map[x, y] = MapCell.Wall;
+                        map[x, y] = new MapCell() { Image = Resource.Grass, Cell = MapCellEnum.Wall };
                         buildings.Add(new Building(new Point(x, y)));
                         break;
                     default:
-                        map[x, y] = MapCell.Empty;
+                        map[x, y] = new MapCell() { Image = Resource.Path, Cell = MapCellEnum.Empty };
                         break;
                 }
             }
         }
 
         return new Map(map, buildings.ToArray(), entities, players);
+    }
+
+    private void IdentifyRoadImages(MapCell[,] map)
+    {
+        for (int x = 0; x < map.GetLength(0); x++)
+        for (int y = 0; y < map.GetLength(1); y++)
+            if (map[x, y].Cell == MapCellEnum.Empty)
+                map[x, y].Image = IdentifyRoadImage(new Point(x, y));
+    }
+
+    private Bitmap IdentifyRoadImage(Point point)
+    {
+        var num = 0;
+        if (IsPossibleCellToMove(point + DirectionExtensions.ConvertDirectionToOffset(MoveDirection.Up))) num += 1000;
+        if (IsPossibleCellToMove(point + DirectionExtensions.ConvertDirectionToOffset(MoveDirection.Down))) num += 100;
+        if (IsPossibleCellToMove(point + DirectionExtensions.ConvertDirectionToOffset(MoveDirection.Left))) num += 10;
+        if (IsPossibleCellToMove(point + DirectionExtensions.ConvertDirectionToOffset(MoveDirection.Right))) num += 1;
+
+        var image = Resource.Path;
+        switch (num)
+        {
+            case 1100:
+                image = Resource.Straight_Road;
+                image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                break;
+            case 0011:
+                image = Resource.Straight_Road;
+                break;
+            case 1001:
+                image = Resource.Сorner_Road;
+                break;
+            case 1010:
+                image = Resource.Сorner_Road;
+                image.RotateFlip(RotateFlipType.Rotate180FlipY);
+                break;
+            case 0101:
+                image = Resource.Сorner_Road;
+                image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                break;
+            case 0110:
+                image = Resource.Сorner_Road;
+                image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                break;
+            case 1101:
+                image = Resource.Semi_Cross_Road;
+                break;
+            case 1110:
+                image = Resource.Semi_Cross_Road;
+                image.RotateFlip(RotateFlipType.Rotate180FlipY);
+                break;
+            case 1011:
+                image = Resource.Semi_Cross_Road;
+                image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                break;
+            case 0111:
+                image = Resource.Semi_Cross_Road;
+                image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                break;
+            case 1111:
+                image = Resource.Cross_Road;
+                break;
+        }
+        return image;
     }
 
     #endregion

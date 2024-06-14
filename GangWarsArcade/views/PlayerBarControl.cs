@@ -1,4 +1,5 @@
 ﻿using GangWarsArcade.domain;
+using GangWarsArcade.Properties;
 using Point = System.Drawing.Point;
 
 namespace GangWarsArcade.views;
@@ -33,7 +34,7 @@ public partial class PlayerBarControl : UserControl
             Text = string.Format("HP: {0}", player.HP),
             ForeColor = GameplayPainter.ColourValues[(int)player.Gang % GameplayPainter.ColourValues.Length].Color,
             TextAlign = ContentAlignment.MiddleRight,
-            Image = player.Image,
+            Image = IdentifyImage(player.Gang),
             ImageAlign = ContentAlignment.MiddleLeft,
             BackColor = Color.Transparent,
             Tag = player
@@ -50,6 +51,18 @@ public partial class PlayerBarControl : UserControl
         };
         Controls.Add(_ownedLocation);
         Controls.Add(_player);
+    }
+
+    private static Bitmap IdentifyImage(Gang gang)
+    {
+        return gang switch
+        {
+            Gang.Green => Resource.peon_thumb,
+            Gang.Blue => Resource.peasant_thumb,
+            Gang.Yellow => Resource.skeletonWarrior_thumb,
+            Gang.Pink => Resource.priest_thumb,
+            _ => Resource.peasant_thumb,
+        };
     }
 
     private void DrawPlayerBar(object sender, PaintEventArgs e)

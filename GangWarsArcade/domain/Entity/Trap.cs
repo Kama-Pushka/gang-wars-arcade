@@ -6,7 +6,7 @@ public class Trap : IEntity
 {
     public const int Damage = 3;
     private const int _maxHP = 1;
-    
+
     public Gang Owner { get; }
 
     public int HP { get; private set; }

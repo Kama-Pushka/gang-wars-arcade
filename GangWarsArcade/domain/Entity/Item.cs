@@ -61,7 +61,7 @@ public class Item : IEntity
         }
     }
 
-    public void CollisionWith(IEntity rival) 
+    public void CollisionWith(IEntity rival)
     {
         if (rival is Player)
         {

@@ -32,11 +32,11 @@ public partial class GameMenuControl : UserControl
 
         InitializeControlMenu(font);
 
-        _menuTitle = new Label() 
-        { 
-            Text = "Menu", 
-            Font = new Font(font, 18), 
-            Location = new Point(Size.Width / 2 - 35, 10) 
+        _menuTitle = new Label()
+        {
+            Text = "Menu",
+            Font = new Font(font, 18),
+            Location = new Point(Size.Width / 2 - 35, 10)
         };
         Controls.Add(_menuTitle);
 
@@ -143,7 +143,7 @@ public partial class GameMenuControl : UserControl
 
     private void ShowControlMenu()
     {
-        foreach (var button in _menuButtons) 
+        foreach (var button in _menuButtons)
             button.Visible = false;
         _menuTitle.Visible = false;
 

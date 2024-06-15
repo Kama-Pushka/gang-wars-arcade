@@ -1,7 +1,7 @@
 ﻿using GangWarsArcade.domain;
 using GangWarsArcade.Properties;
-using Timer = System.Windows.Forms.Timer;
 using Point = System.Drawing.Point;
+using Timer = System.Windows.Forms.Timer;
 
 namespace GangWarsArcade.views;
 
@@ -88,19 +88,19 @@ public partial class AlertControl : UserControl
         return grayBackground;
     }
 
-    public void PrepareNewRound(int numRound) 
+    public void PrepareNewRound(int numRound)
         => SetAlert(new AlertProperties(this, AlertOption.RoundStarting, numRound));
 
-    public void ShowWastedAlert(Player player) 
+    public void ShowWastedAlert(Player player)
         => SetAlert(new AlertProperties(this, AlertOption.HumanPlayerWasted, player));
 
-    public void ShowFinishRoundAlert(int numRound, Player winner) 
+    public void ShowFinishRoundAlert(int numRound, Player winner)
         => SetAlert(new AlertProperties(numRound + 1, AlertOption.RoundFinished, winner));
 
-    public void ShowPauseAlert() 
+    public void ShowPauseAlert()
         => SetAlert(new AlertProperties(this, AlertOption.Pause));
 
-    public void ShowTrainingAlert(Point highlightWindowPosition) 
+    public void ShowTrainingAlert(Point highlightWindowPosition)
         => SetAlert(new AlertProperties(this, AlertOption.Training, highlightWindowPosition));
 
     private void SetAlert(AlertProperties option)
@@ -185,7 +185,7 @@ public partial class AlertControl : UserControl
         _trainingImage.Image = Resource.wasd;
         _trainingImage.Location = new Point(
             offsetX ? highlightPosition.X - 100 - 150 : highlightPosition.X + 135,
-            offsetY ? highlightPosition.Y - 25: highlightPosition.Y + 100);
+            offsetY ? highlightPosition.Y - 25 : highlightPosition.Y + 100);
         _trainingImage.Size = new Size(150, 150);
         _trainingImage.SizeMode = PictureBoxSizeMode.Zoom;
         _trainingImage.Show();

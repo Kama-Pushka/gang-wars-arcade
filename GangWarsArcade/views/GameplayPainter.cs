@@ -1,6 +1,5 @@
 ﻿using GangWarsArcade.domain;
 using GangWarsArcade.Properties;
-using static GangWarsArcade.views.GameState;
 
 namespace GangWarsArcade.views;
 
@@ -85,7 +84,7 @@ public class GameplayPainter
 
                 g.DrawString(IdentifyText(cell.Owner), new Font(_fonts, 80), new SolidBrush(Color.FromArgb(175, color.Color.R, color.Color.G, color.Color.B)), rect, format);
             }
-            else 
+            else
             {
                 g.FillRectangle(new SolidBrush(Color.FromArgb(60, color.Color.R, color.Color.G, color.Color.B)),
                     rect);

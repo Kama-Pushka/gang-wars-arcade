@@ -57,14 +57,6 @@ public class GameState
         _itemsRespawnTimer.Start();
     }
 
-    public static readonly Dictionary<MoveDirection, int> sequenceNumber = new()
-    {
-        { MoveDirection.Up, 0 },
-        { MoveDirection.Down, 1 },
-        { MoveDirection.Left, 2 },
-        { MoveDirection.Right, 3 },
-    };
-
     private void UpdateGamePainter(object? _, EventArgs __)
     {
         foreach (var e in GameplayPainter.Animations.ToList())
@@ -89,7 +81,7 @@ public class GameState
 
             e.CurrentAnimationTime++;
             if (e.Entity.Sprites != null)
-                if (e.Entity.IsActive) e.Entity.Image = e.Entity.Sprites[sequenceNumber[e.Direction], e.CurrentSprite];
+                if (e.Entity.IsActive) e.Entity.Image = e.Entity.Sprites[EntityAnimation.DirectionToOrderNumber[e.Direction], e.CurrentSprite];
                 else
                 {
                     e.CurrentSprite++;
@@ -105,7 +97,6 @@ public class GameState
                 e.Entity.Update(GameMap);
                 e.Entity.Act(GameMap);
                 BeginAct(e.Entity);
-                // TODO обновлять карту здесь
             }
             else if (e.Entity.IsActive) e.Entity.Update(GameMap);
         }
@@ -116,21 +107,6 @@ public class GameState
     {
         foreach (var a in GameplayPainter.Animations.Where(a => a.Entity == entity).ToList())
             GameplayPainter.Animations.Remove(a);
-    }
-
-    public class EntityAnimation
-    {
-        public int AnimationTime;
-        public int CurrentAnimationTime;
-        public int CurrentSprite;
-        public int SlowDownFrameRate;
-        public int MaxSlowDownFrameRate;
-        public int SpritesCount;
-        public IEntity Entity;
-        public MoveDirection Direction;
-        public Point Location;
-        public domain.Point TargetLogicalLocation;
-        public bool IsOneReplayAntimation;
     }
 
     public void BeginAct(IEntity entity, EntityAnimation prevAnimation = null)
@@ -205,13 +181,13 @@ public class GameState
 
     private void GameTimerTick(object? _, EventArgs __)
     {
-        var earlyFinish = СheckForEarlyFinishRound(out var winner); 
+        var earlyFinish = СheckForEarlyFinishRound(out var winner);
         if (_timeLeft > 0 && !earlyFinish)
         {
             _timeLeft--;
             InvalidateTopbarVisual();
         }
-        else if (!earlyFinish) 
+        else if (!earlyFinish)
         {
             var activePlayers = GameMap.Players.Values.Where(p => p.IsActive).OrderByDescending(p => p.OwnedBuildingsCount).ToArray();
             if (activePlayers[0].OwnedBuildingsCount == activePlayers[1].OwnedBuildingsCount) FinishRound(null);

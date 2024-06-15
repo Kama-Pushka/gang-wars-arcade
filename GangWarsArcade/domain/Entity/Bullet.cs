@@ -50,7 +50,7 @@ public class Bullet : IEntity
         }
     }
 
-    public void Move(Map map, Point newPoint) 
+    public void Move(Map map, Point newPoint)
     {
         Position = newPoint;
     }

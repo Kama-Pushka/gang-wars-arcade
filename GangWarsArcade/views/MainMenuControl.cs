@@ -1,6 +1,5 @@
 ﻿using GangWarsArcade.domain;
 using GangWarsArcade.Properties;
-using System.Drawing.Text;
 using Point = System.Drawing.Point;
 
 namespace GangWarsArcade.views;
@@ -8,7 +7,7 @@ namespace GangWarsArcade.views;
 public partial class MainMenuControl : UserControl
 {
     public event Action<Gang> StartGameButtonClicked;
-    
+
     private Gang _playerGang;
 
     private readonly PictureBox _mark;

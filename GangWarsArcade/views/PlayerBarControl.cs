@@ -39,15 +39,15 @@ public partial class PlayerBarControl : UserControl
             BackColor = Color.Transparent,
             Tag = player
         };
-        _ownedLocation = new Label 
-        { 
-            BackColor = Color.Transparent, 
-            Font = new Font(font, 24), 
-            Size = new Size(45, 70), 
+        _ownedLocation = new Label
+        {
+            BackColor = Color.Transparent,
+            Font = new Font(font, 24),
+            Size = new Size(45, 70),
             Text = $"{player.OwnedBuildingsCount}",
             ForeColor = GameplayPainter.ColourValues[(int)player.Gang % GameplayPainter.ColourValues.Length].Color,
-            TextAlign = ContentAlignment.MiddleRight, 
-            Location = new Point(155, 2) 
+            TextAlign = ContentAlignment.MiddleRight,
+            Location = new Point(155, 2)
         };
         Controls.Add(_ownedLocation);
         Controls.Add(_player);
@@ -91,15 +91,15 @@ public partial class PlayerBarControl : UserControl
         if (player.IsAlive)
         {
             BeginInvoke(() => // это необходимо по причине того, что System.Timers.Timer в Player запускает таймер в новом потоке
-            { 
-                _player.Text = $"HP: {player.HP}"; 
-                _ownedLocation.Text = $"{player.OwnedBuildingsCount}"; 
+            {
+                _player.Text = $"HP: {player.HP}";
+                _ownedLocation.Text = $"{player.OwnedBuildingsCount}";
             });
         }
         else
         {
             BeginInvoke(() =>
-            { 
+            {
                 _player.Text = string.Format("WASTED");
                 _ownedLocation.Text = "";
             });

@@ -6,7 +6,7 @@ namespace GangWarsArcade.AI;
 public class Bot
 {
     private Queue<MoveDirection> _moveDirections = new();
-    private Random _rand = new Random();
+    private readonly Random _rand = new();
 
     public MoveDirection GetMove(Map map, Player player)
     {
@@ -47,10 +47,10 @@ public class Bot
     public void Act(Map map, Player ai)
     {
         if (ai.Weapon == 0 && ai.Inventory == 0) return;
-        
+
         var rivals = map.Entities.Where(e => e is Player player && player != ai && ((player.Position - ai.Position).X == 0 || (player.Position - ai.Position).Y == 0)).ToList();
         if (rivals.Count != 0)
-        { 
+        {
             var rival = rivals.First();
             var offset = rival.Position - ai.Position;
 
@@ -60,7 +60,7 @@ public class Bot
             {
                 ai.Shot(map);
                 ai.UseInventoryItem(map);
-            }        
+            }
         }
     }
 

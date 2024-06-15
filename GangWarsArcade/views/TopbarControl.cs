@@ -6,7 +6,7 @@ namespace GangWarsArcade.views;
 public partial class TopbarControl : UserControl
 {
     private Point _roundWinnersBarPosition;
-    
+
     private readonly GameState _gameState;
     private readonly Label _timeLable;
 
@@ -71,7 +71,7 @@ public partial class TopbarControl : UserControl
         {
             var rect = new RectangleF(_roundWinnersBarPosition.X + i * 30f, _roundWinnersBarPosition.Y, 15, 15);
             var shadow = new RectangleF(_roundWinnersBarPosition.X + i * 30f + 2, _roundWinnersBarPosition.Y + 2, 15, 15);
-            g.DrawEllipse(new Pen (new SolidBrush(Color.FromKnownColor(KnownColor.Black))), shadow);
+            g.DrawEllipse(new Pen(new SolidBrush(Color.FromKnownColor(KnownColor.Black))), shadow);
             g.FillEllipse(new SolidBrush(Color.FromKnownColor(KnownColor.Black)), shadow);
             if (rounds[i] != 0)
             {

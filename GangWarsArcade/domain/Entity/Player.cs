@@ -13,7 +13,7 @@ public class Player : IEntity
     public event Action<IEntity> Respawned;
 
     public event Action<Player> HumanPlayerWasted;
-    public event Action<int> HumanPlayerShoted; 
+    public event Action<int> HumanPlayerShoted;
 
     public Bitmap[,] Sprites { get; }
 
@@ -51,7 +51,7 @@ public class Player : IEntity
         shotCooldown = new() { Interval = 1000 };
         shotCooldown.Elapsed += (_, __) => shotCooldown.Stop();
 
-        Sprites = new Bitmap[4,5];
+        Sprites = new Bitmap[4, 5];
         var scrImage = (Bitmap)typeof(Resource).GetProperty(IdentifySprites() + "Sprites", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
         var destRegion = new Rectangle(0, 0, 64, 64);
         for (var i = 0; i < Sprites.GetLength(0); i++) // walking sprites
@@ -252,7 +252,7 @@ public class Player : IEntity
         {
             var bullet = new Bullet(Direction, Position, Gang);
             //bullet.Move(map);
-            map.AddEntity(bullet); 
+            map.AddEntity(bullet);
             shotCooldown.Start();
         }
 

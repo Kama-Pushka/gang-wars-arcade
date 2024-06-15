@@ -1,6 +1,6 @@
-using System.Diagnostics;
-using GangWarsArcade.domain;
 using GangWarsArcade.AI;
+using GangWarsArcade.domain;
+using System.Diagnostics;
 
 namespace Dungeon;
 
@@ -175,7 +175,7 @@ public class Bfs_Should
         {
             var offset = path[i + 1] - path[i];
             Assert.IsTrue(directions.Contains(offset), $"Incorrect step #{i} in your path: from {path[i]} to {path[i + 1]}");
-            Assert.AreNotEqual(MapCell.Wall, map.Maze[path[i + 1].X, path[i + 1].Y], $"Collided with wall at {i}th path point: {path[i + 1]}");
+            Assert.AreNotEqual(MapCellEnum.Wall, map.Maze[path[i + 1].X, path[i + 1].Y].Cell, $"Collided with wall at {i}th path point: {path[i + 1]}");
         }
         Assert.AreEqual(map.Players.Values.First().Position, path.Last(), "The last point in path must be 'start'");
         Assert.GreaterOrEqual(path.Count, expectedLength, "Checker bug?! Leave a comment above this slide, to notify task authors, please");

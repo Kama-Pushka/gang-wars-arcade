@@ -1,10 +1,8 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+﻿using System.Drawing.Drawing2D;
 
 namespace GangWarsArcade.views;
 
- //from http:switchonthecode.comtutorialscsharp-creating-rounded-rectangles-using-a-graphics-path
+//from http:switchonthecode.comtutorialscsharp-creating-rounded-rectangles-using-a-graphics-path
 
 public abstract class RoundedRectangle
 {

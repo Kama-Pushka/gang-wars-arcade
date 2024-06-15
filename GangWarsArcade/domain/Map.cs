@@ -1,5 +1,4 @@
 ﻿using GangWarsArcade.Properties;
-using static GangWarsArcade.views.GameState;
 
 namespace GangWarsArcade.domain;
 
@@ -16,7 +15,7 @@ public class Map : IMapWithEntity
     public Building[] Buildings { get; private set; }
 
     public HashSet<IEntity> Entities { get; private set; }
-    public void AddEntity(IEntity entity) 
+    public void AddEntity(IEntity entity)
     {
         Entities.Add(entity);
         EntityAdded(entity, null);
@@ -48,8 +47,8 @@ public class Map : IMapWithEntity
         var width = Maze.GetLength(0);
         var height = Maze.GetLength(1);
         for (var i = 0; i < width; i++)
-        for (var j = 0; j < height; j++)
-            if (Maze[i, j].Cell == MapCellEnum.Empty) emptyPoints.Add(new Point(i, j));
+            for (var j = 0; j < height; j++)
+                if (Maze[i, j].Cell == MapCellEnum.Empty) emptyPoints.Add(new Point(i, j));
         _emptyPoints = emptyPoints.ToArray();
     }
 
@@ -88,7 +87,7 @@ public class Map : IMapWithEntity
         OwnedLocations = new Dictionary<Point, OwnedLocation>();
         GenerateStartMap();
 
-        foreach (var player in Players.Values) 
+        foreach (var player in Players.Values)
             AddEntity(player);
     }
 
@@ -117,7 +116,7 @@ public class Map : IMapWithEntity
             }
             Players[(Gang)i + 1].Reset(_startHomeLocations[i].PlayerPosition);
             Players[(Gang)i + 1].SetNewDirection(_startHomeLocations[i].StartDirection);
-            Players[(Gang)i + 1].Image = Players[(Gang)i + 1].Sprites[sequenceNumber[Players[(Gang)i + 1].Direction], 0];
+            Players[(Gang)i + 1].Image = Players[(Gang)i + 1].Sprites[EntityAnimation.DirectionToOrderNumber[Players[(Gang)i + 1].Direction], 0];
         }
     }
 
@@ -232,9 +231,9 @@ public class Map : IMapWithEntity
     private void IdentifyRoadImages(MapCell[,] map)
     {
         for (int x = 0; x < map.GetLength(0); x++)
-        for (int y = 0; y < map.GetLength(1); y++)
-            if (map[x, y].Cell == MapCellEnum.Empty)
-                map[x, y].Image = IdentifyRoadImage(new Point(x, y));
+            for (int y = 0; y < map.GetLength(1); y++)
+                if (map[x, y].Cell == MapCellEnum.Empty)
+                    map[x, y].Image = IdentifyRoadImage(new Point(x, y));
     }
 
     private Bitmap IdentifyRoadImage(Point point)

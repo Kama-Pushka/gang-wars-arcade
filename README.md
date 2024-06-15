@@ -11,6 +11,8 @@
 - Враги не дремлют и будут делать все, что в их силах, чтобы завоевать победу.
 - По истечении таймера раунда победителем станет последний выживший, либо тот, кто набрал больше очков.
 
+![Gameplay](https://raw.githubusercontent.com/Kama-Pushka/gang-wars-arcade/main/.github/gameplay.gif)
+
 ## Управление
 
 - Клавиши WASD - движение.
@@ -79,4 +81,5 @@
 ## Авторские права
 
 — В игре использованы графические материалы из игр Warcraft 2: Tides of Darkness и Warcraft 3: Reign of Chaos. Спрайты анимаций взяты от [Maxim](https://www.spriters-resource.com/submitter/Maxim/).
+
 — В качестве основного шрифта в игре используется шрифт LifeCraft.
